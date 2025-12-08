@@ -54,7 +54,6 @@ const LayerDetailPage = () => {
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedFeatureId, setSelectedFeatureId] = useState(null);
-
   const [geomType, setGeomType] = useState("Point");
   const [coordinates, setCoordinates] = useState([]);
 
@@ -78,14 +77,7 @@ const LayerDetailPage = () => {
 
   // ADD NEW FEATURE
   const addMutation = useMutation({
-    mutationFn: async (payload: {
-      name: FormDataEntryValue | null;
-      properties: Record<string, any>;
-      geom: any;
-    }) => {
-      // sesuaikan dengan API kamu
-      return featureService.createDetail(layer.id, payload);
-    },
+    mutationFn: (payload) => featureService.createDetail(layer.id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["details-layer", id] });
       setIsOpenAddModal(false);
@@ -93,21 +85,8 @@ const LayerDetailPage = () => {
     },
   });
 
-  // UPDATE FEATURE
-  //   const editMutation = useMutation({
-  //     mutationFn: (payload) =>
-  //       featureService.update(id, payload.featureId, payload.data),
-  //     onSuccess: () => {
-  //       queryClient.invalidateQueries({ queryKey: ["details-layer", id] });
-  //       setEditModalOpen(false);
-  //     },
-  //   });
-
-  // DELETE FEATURE
   const deleteMutation = useMutation({
-    mutationFn: async (fid: string) => {
-      return featureService.delete(id, fid);
-    },
+    mutationFn: (fid) => featureService.delete(id, fid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["details-layer", id] });
     },
@@ -117,7 +96,7 @@ const LayerDetailPage = () => {
     e.preventDefault();
     const form = new FormData(e.target);
 
-    const payload = {
+    addMutation.mutate({
       name: form.get("name"),
       properties: {
         JNSRSR: form.get("JNSRSR"),
@@ -134,41 +113,23 @@ const LayerDetailPage = () => {
         type: geomType,
         coordinates: geomType === "Polygon" ? [coordinates] : coordinates,
       },
-    };
-
-    addMutation.mutate(payload);
+    });
   };
-
-  const handleEditClick = (fid) => {
-    setSelectedFeatureId(fid);
-    setEditModalOpen(true);
-  };
-
-  //   const handleSubmitEdit = (e) => {
-  //     e.preventDefault();
-
-  //     const form = new FormData(e.target);
-  //     const updated = {
-  //       name: form.get("name"),
-  //       properties: {},
-  //     };
-
-  //     for (let [key, value] of form.entries()) {
-  //       if (key !== "name") updated.properties[key] = value;
-  //     }
-
-  //     editMutation.mutate({
-  //       featureId: selectedFeatureId,
-  //       data: updated,
-  //     });
-  //   };
 
   if (loadingLayer) return <p>Loading...</p>;
 
   return (
     <DashboardLayout>
-      <div className="flex justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Detail Layer: {layer?.name}</h1>
+      {/* HEADER */}
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Detail Layer: {layer?.name}
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Manage fitur dan geometry dari layer ini.
+          </p>
+        </div>
 
         <button
           onClick={() => {
@@ -176,48 +137,61 @@ const LayerDetailPage = () => {
             setGeomType("Point");
             setIsOpenAddModal(true);
           }}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          className="bg-green-600 hover:bg-green-700 transition text-white px-5 py-2.5 rounded-lg shadow flex items-center gap-2"
         >
           <Plus className="w-4 h-4" /> Tambah Detail
         </button>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow">
-        <h2 className="font-medium mb-4">Daftar Detail Layer</h2>
+      {/* CARD LIST */}
+      <div className="bg-white rounded-xl shadow-sm border p-6">
+        <h2 className="font-semibold text-gray-700 mb-4">
+          Daftar Detail Layer
+        </h2>
 
         {features.length === 0 ? (
-          <p className="text-gray-500">Belum ada detail.</p>
+          <p className="text-gray-500 text-sm">Belum ada detail.</p>
         ) : (
-          <div className="overflow-x-auto max-w-full">
-            <table className="min-w-max w-full text-sm border">
-              <thead className="bg-gray-100 text-xs uppercase">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border rounded-lg overflow-hidden">
+              <thead className="bg-gray-100 text-xs text-gray-600 uppercase">
                 <tr>
                   <th className="p-3 border">Nama</th>
-                  <th className="p-3 border">Geom</th>
+                  <th className="p-3 border">Geometry</th>
                   <th className="p-3 border">Properties</th>
-                  <th className="p-3 border">Dibuat Pada</th>
+                  <th className="p-3 border">Dibuat</th>
                   <th className="p-3 border">Action</th>
                 </tr>
               </thead>
-
               <tbody>
                 {features.map((f) => (
-                  <tr key={f.id} className="border-b hover:bg-gray-50">
+                  <tr
+                    key={f.id}
+                    className="border-b hover:bg-gray-50 transition"
+                  >
                     <td className="p-3 border">{f.name}</td>
-                    <td className="p-3 border">{f.geom?.type}</td>
+                    <td className="p-3 border text-center">{f.geom?.type}</td>
+
                     <td className="p-3 border">
-                      <pre className="text-xs bg-gray-50 p-2 rounded overflow-auto max-h-40">
+                      <pre className="text-xs bg-gray-50 p-2 rounded-lg overflow-auto max-h-40">
                         {JSON.stringify(f.properties, null, 2)}
                       </pre>
                     </td>
-                    <td className="p-3 border">{f.createdAt}</td>
+
+                    <td className="p-3 border text-sm text-gray-600">
+                      {f.createdAt}
+                    </td>
+
                     <td className="p-3 border flex gap-3">
                       <Pencil
-                        onClick={() => handleEditClick(f.id)}
-                        className="cursor-pointer"
+                        onClick={() => {
+                          setSelectedFeatureId(f.id);
+                          setEditModalOpen(true);
+                        }}
+                        className="cursor-pointer text-blue-600 hover:text-blue-800"
                       />
                       <Trash
-                        className="cursor-pointer text-red-600"
+                        className="cursor-pointer text-red-600 hover:text-red-800"
                         onClick={() => deleteMutation.mutate(f.id)}
                       />
                     </td>
@@ -229,31 +203,32 @@ const LayerDetailPage = () => {
         )}
       </div>
 
+      {/* ADD MODAL */}
       {isOpenAddModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-3 z-[9999]">
-          <div className="bg-white w-full max-w-4xl rounded-xl p-5 relative shadow-xl overflow-y-auto max-h-[95vh]">
+        <div className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-4xl rounded-xl shadow-lg p-6 relative overflow-y-auto max-h-[95vh]">
             <button
               onClick={() => setIsOpenAddModal(false)}
-              className="absolute top-3 right-3"
+              className="absolute top-3 right-3 text-gray-600 hover:text-black"
             >
               <X />
             </button>
 
-            <h2 className="text-xl font-semibold mb-4">Tambah Detail Layer</h2>
+            <h2 className="text-xl font-semibold mb-5">Tambah Detail Layer</h2>
 
-            <form onSubmit={handleSubmitAdd} className="space-y-5">
+            <form onSubmit={handleSubmitAdd} className="space-y-6">
               <div>
                 <label className="font-medium">Nama</label>
                 <input
                   name="name"
                   required
-                  className="w-full p-2 border rounded mt-1"
+                  className="w-full p-2 border rounded-lg mt-1"
                 />
               </div>
 
               <div>
                 <label className="font-medium">Properties</label>
-                <div className="grid grid-cols-2 gap-2 mt-1">
+                <div className="grid grid-cols-2 gap-3 mt-2">
                   {[
                     "JNSRSR",
                     "NAMOBJ",
@@ -269,7 +244,7 @@ const LayerDetailPage = () => {
                       key={p}
                       name={p}
                       placeholder={p}
-                      className="p-2 border rounded"
+                      className="p-2 border rounded-lg"
                     />
                   ))}
                 </div>
@@ -283,7 +258,7 @@ const LayerDetailPage = () => {
                     setGeomType(e.target.value);
                     setCoordinates([]);
                   }}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded-lg mt-1"
                 >
                   <option value="Point">Point</option>
                   <option value="LineString">LineString</option>
@@ -293,14 +268,13 @@ const LayerDetailPage = () => {
 
               <div>
                 <label className="font-medium">Gambar Geometry</label>
-                <div className="h-[350px] border rounded mt-1 overflow-hidden">
+                <div className="h-[350px] border rounded-lg mt-2 overflow-hidden">
                   <MapContainer
                     center={[-3.8205, 102.2815]}
                     zoom={15}
                     style={{ height: "100%", width: "100%" }}
                   >
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
                     <GeometryDrawer
                       type={geomType}
                       onChange={(coords) => setCoordinates(coords)}
@@ -311,11 +285,11 @@ const LayerDetailPage = () => {
 
               <textarea
                 readOnly
-                className="w-full p-2 border rounded text-xs"
+                className="w-full p-2 border rounded-lg text-xs"
                 value={JSON.stringify(coordinates, null, 2)}
               />
 
-              <button className="bg-green-600 text-white w-full py-2 rounded mt-2">
+              <button className="bg-green-600 hover:bg-green-700 text-white w-full py-2.5 rounded-lg transition">
                 Simpan Detail Layer
               </button>
             </form>
@@ -323,12 +297,13 @@ const LayerDetailPage = () => {
         </div>
       )}
 
+      {/* EDIT MODAL (placeholder) */}
       {editModalOpen && selectedFeature && !featureLoading && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-3 z-[9999]">
-          <div className="bg-white w-full max-w-3xl rounded-xl p-5 relative">
+        <div className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-3xl rounded-xl shadow-lg p-6 relative">
             <button
               onClick={() => setEditModalOpen(false)}
-              className="absolute top-3 right-3"
+              className="absolute top-3 right-3 text-gray-600 hover:text-black"
             >
               <X />
             </button>
@@ -337,30 +312,7 @@ const LayerDetailPage = () => {
               Edit Feature: {selectedFeature.name}
             </h2>
 
-            {/* <form onSubmit={handleSubmitEdit} className="space-y-3">
-              <input
-                name="name"
-                defaultValue={selectedFeature.name}
-                className="w-full p-2 border rounded"
-              />
-
-              <div className="grid grid-cols-2 gap-2">
-                {Object.entries(selectedFeature.properties).map(
-                  ([key, value]) => (
-                    <input
-                      key={key}
-                      name={key}
-                      //   defaultValue={value}
-                      className="p-2 border rounded"
-                    />
-                  )
-                )}
-              </div>
-
-              <button className="bg-blue-600 text-white w-full py-2 rounded mt-2">
-                Simpan Perubahan
-              </button>
-            </form> */}
+            {/* Tempat form edit */}
           </div>
         </div>
       )}

@@ -24,16 +24,33 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  // =======================
-  // BAR CHART - Dataset per kategori
-  // =======================
+  // ==========================================
+  // DATASET STATISTIK PER KATEGORI (5 kategori)
+  // ==========================================
+  const kategoriStats = [
+    { name: "Jalan", value: 32, color: "green" },
+    { name: "Gedung", value: 21, color: "blue" },
+    { name: "Jembatan", value: 14, color: "orange" },
+    { name: "Irigasi", value: 18, color: "purple" },
+    { name: "Drainase", value: 10, color: "rose" },
+  ];
+
+  // ============================
+  // BAR CHART 5 KATEGORI
+  // ============================
   const barData = {
-    labels: ["Tata Ruang", "Ekonomi", "Infrastruktur", "Lingkungan"],
+    labels: kategoriStats.map((k) => k.name),
     datasets: [
       {
-        label: "Jumlah Dataset",
-        data: [24, 15, 32, 18],
-        backgroundColor: ["#16a34a", "#3b82f6", "#f97316", "#8b5cf6"],
+        label: "Jumlah Data Aset",
+        data: kategoriStats.map((k) => k.value),
+        backgroundColor: [
+          "#16a34a", // hijau
+          "#3b82f6", // biru
+          "#f97316", // orange
+          "#8b5cf6", // ungu
+          "#fb7185", // rose
+        ],
         borderRadius: 8,
       },
     ],
@@ -47,10 +64,6 @@ const Dashboard = () => {
     },
   };
 
-  // =======================
-  // LINE CHART - Upload per bulan
-  // =======================
-
   return (
     <DashboardLayout>
       <div className="space-y-10">
@@ -58,36 +71,18 @@ const Dashboard = () => {
         <div className="flex justify-between items-center flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-semibold text-gray-800">
-              Selamat Datang 👋
+              Selamat Datang Admin 👋
             </h1>
             <p className="text-gray-500 text-sm mt-1">
-              Kelola dan pantau semua data GIS Anda melalui dashboard modern
+              Kelola dan pantau semua data Aset Anda melalui dashboard modern
               ini.
             </p>
           </div>
-
-          {/* <button className="px-5 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition shadow-sm">
-            + Tambah Dataset
-          </button> */}
         </div>
 
-        {/* STATISTICS */}
-        <section className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {[
-            {
-              icon: Database,
-              label: "Total Dataset",
-              value: "124",
-              color: "green",
-            },
-            { icon: Layers, label: "Kategori", value: "8", color: "blue" },
-            {
-              icon: Globe,
-              label: "Ukuran Data",
-              value: "1.2 GB",
-              color: "orange",
-            },
-          ].map((item, i) => (
+        {/* CARD STATISTIK */}
+        <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+          {kategoriStats.map((item, i) => (
             <div
               key={i}
               className="bg-white border rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center gap-4"
@@ -95,10 +90,10 @@ const Dashboard = () => {
               <div
                 className={`p-3 rounded-xl bg-${item.color}-100 text-${item.color}-700`}
               >
-                <item.icon className="w-6 h-6" />
+                <Database className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-xs text-gray-500">{item.label}</p>
+                <p className="text-xs text-gray-500">{item.name}</p>
                 <h3 className="text-xl font-bold">{item.value}</h3>
               </div>
             </div>
@@ -110,7 +105,7 @@ const Dashboard = () => {
           {/* Bar Chart */}
           <div className="col-span-2 bg-white border rounded-2xl p-6 shadow-sm">
             <h2 className="font-semibold text-gray-800 mb-4">
-              Statistik Dataset per Kategori
+              Statistik Data Aset per Kategori
             </h2>
             <Bar data={barData} options={barOptions} height={120} />
           </div>
@@ -125,17 +120,17 @@ const Dashboard = () => {
             <div className="space-y-5 text-sm">
               {[
                 {
-                  title: "Dataset Batas Desa Kedung Waringin berhasil diunggah",
+                  title: "Data Aset Jalan Nasional berhasil diperbarui",
                   time: "2 jam lalu",
                   color: "green",
                 },
                 {
-                  title: "Dataset Tata Guna Lahan diperbarui",
+                  title: "Data Gedung Pemerintah ditambahkan",
                   time: "Kemarin",
                   color: "blue",
                 },
                 {
-                  title: "Pengguna baru ‘Rifky’ ditambahkan sebagai editor",
+                  title: "Data Aset Irigasi Sekunder direview",
                   time: "2 hari lalu",
                   color: "orange",
                 },
@@ -178,20 +173,26 @@ const Dashboard = () => {
               <tbody className="divide-y">
                 {[
                   [
-                    "Batas Administrasi Desa",
-                    "Tata Ruang",
-                    "Polygon",
+                    "Jalan Provinsi Barat",
+                    "Jalan",
+                    "Line",
                     "11 Okt 2025",
                     "Syafiul",
                   ],
                   [
-                    "Jaringan Jalan Utama",
-                    "Infrastruktur",
-                    "Line",
+                    "Gedung Sekolah Baru",
+                    "Gedung",
+                    "Polygon",
                     "09 Okt 2025",
                     "Ikhsan",
                   ],
-                  ["Sebaran UMKM", "Ekonomi", "Point", "07 Okt 2025", "Admin"],
+                  [
+                    "Jembatan Sungai Kecil",
+                    "Jembatan",
+                    "Line",
+                    "07 Okt 2025",
+                    "Admin",
+                  ],
                 ].map((row, i) => (
                   <tr key={i} className="hover:bg-gray-50">
                     {row.map((cell, c) => (

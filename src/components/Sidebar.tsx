@@ -21,9 +21,13 @@ const Sidebar = () => {
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-gray-200 flex items-center gap-2">
-        <div className="w-6 h-6 bg-green-600 rounded"></div>
-        <span className="font-semibold text-lg text-gray-800">
-          GIS Bengkulu
+        <img
+          src="https://iconlogovector.com/uploads/images/2023/05/lg-9cee3ca8e0a838a8e72da83c54f6e5fc56.jpg"
+          alt="Logo Kota Bengkulu"
+          className="w-10 h-10"
+        />
+        <span className="font-semibold text-base text-gray-800">
+          Data Aset Kota Bengkulu
         </span>
       </div>
 

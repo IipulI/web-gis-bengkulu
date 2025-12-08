@@ -51,16 +51,16 @@ const FeatureEditPage = () => {
   // ============================================================
   // EDIT MUTATION
   // ============================================================
-  //   const editMutation = useMutation({
-  //     mutationFn: (data: UpdatePayload) =>
-  //       featureService.update(layerId, featureId, data),
-  //     onSuccess: () => {
-  //       queryClient.invalidateQueries({
-  //         queryKey: ["feature", layerId, featureId],
-  //       });
-  //       navigate(`/layers/${layerId}`);
-  //     },
-  //   });
+  const editMutation = useMutation({
+    mutationFn: (data: UpdatePayload) =>
+      featureService.update(layerId, featureId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["feature", layerId, featureId],
+      });
+      navigate(`/layers/${layerId}`);
+    },
+  });
 
   // ============================================================
   // HANDLE FORM SUBMIT
@@ -80,7 +80,7 @@ const FeatureEditPage = () => {
       }
     });
 
-    // editMutation.mutate(payload);
+    editMutation.mutate(payload);
   };
 
   // ============================================================
@@ -159,9 +159,9 @@ const FeatureEditPage = () => {
 
         <button
           className="bg-blue-600 text-white w-full py-2 rounded mt-3"
-          //   disabled={editMutation.isPending}
+          disabled={editMutation.isPending}
         >
-          {/* {editMutation.isPending ? "Menyimpan..." : "Simpan Perubahan"} */}
+          {editMutation.isPending ? "Menyimpan..." : "Simpan Perubahan"}
         </button>
       </form>
 

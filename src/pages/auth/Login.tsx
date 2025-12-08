@@ -89,9 +89,9 @@ export default function Login() {
         </form>
 
         <p className="text-center text-xs text-gray-400 mt-8">
-          © 2025 Dinas Pertanahan dan Penataan Ruang Kota Bengkulu.
+          © 2025 Pemerintah Kota Bengkulu.
           <br />
-          Pusat Informasi dan Layanan Tata Ruang Kota Bengkulu
+          Data Aset Kota Bengkulu
         </p>
       </div>
     </div>

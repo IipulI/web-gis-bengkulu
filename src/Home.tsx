@@ -63,7 +63,7 @@ export default function Home() {
         HERO SECTION
     =============================== */}
         <section className="relative bg-gradient-to-br from-blue-700 to-blue-900 text-white py-24 text-center overflow-hidden">
-          <div className="absolute inset-0 opacity-20 bg-[url('https://images.pexels.com/photos/356830/pexels-photo-356830.jpeg')] bg-cover bg-center"></div>
+          <div className="absolute inset-0 opacity-20 bg-[url('')] bg-cover bg-center"></div>
 
           <div className="relative max-w-4xl mx-auto">
             <h2 className="text-4xl md:text-6xl font-extrabold leading-tight">

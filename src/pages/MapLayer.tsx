@@ -385,13 +385,13 @@ const MapLayer: React.FC = () => {
                         <Pencil className="text-green-600" />
                       </button>
 
-                      <button
+                      {/* <button
                         onClick={() => navigate(`/map-layer/${layer.id}`)}
                         className="p-2 rounded-md hover:bg-gray-100"
                         title="Buka halaman layer"
                       >
                         <ExternalLink className="text-green-700" />
-                      </button>
+                      </button> */}
 
                       <button
                         onClick={() => handleDelete(layer.id)}
@@ -452,12 +452,12 @@ const MapLayer: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 text-gray-500">—</td>
                     <td className="px-4 py-3 text-right">
-                      <button
+                      {/* <button
                         onClick={() => navigate(`/map-layer/${l.id}`)}
                         className="text-sm text-green-600 hover:underline"
                       >
                         Detail
-                      </button>
+                      </button> */}
                     </td>
                   </tr>
                 ))}
