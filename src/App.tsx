@@ -16,30 +16,36 @@ import LayerDetailPage from "./pages/LayerDetailPage";
 import FeatureEditPage from "./pages/feature/FeatureEditPage";
 import Help from "./pages/help/Help";
 import Settings from "./pages/settings/Settings";
+import ProtectedRoute from "./routes/ProtectedRoutes";
+import NotFound from "./components/NotFound";
 
 export default function App() {
   return (
     <Routes>
+      <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/map-layer" element={<MapLayer />} />
+        <Route path="/dashboard/map-layer/:id" element={<LayerDetailPage />} />
+        <Route
+          path="/layers/:layerId/edit-feature/:featureId"
+          element={<FeatureEditPage />}
+        />
+        <Route path="/dashboard/report" element={<ReportLaporan />} />
+        <Route path="/dashboard/help" element={<Help />} />
+        <Route path="/dashboard/settings" element={<Settings />} />
+      </Route>
       <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
       {/* <Route path="/news" element={<News />} /> */}
       {/* <Route path="/services" element={<Services />} /> */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/gis-upload" element={<GISUpload />} />
-      <Route path="/map-layer" element={<MapLayer />} />
-      <Route path="/map-layer/:id" element={<LayerDetailPage />} />
-      <Route
-        path="/layers/:layerId/edit-feature/:featureId"
-        element={<FeatureEditPage />}
-      />
-      <Route path="/report" element={<ReportLaporan />} />
+      {/* <Route path="/gis-upload" element={<GISUpload />} /> */}
+
       <Route path="/map" element={<MapPage />} />
-      <Route path="/dashboard/infrastructure" element={<Infrastructure />} />
-      <Route path="/dashboard/public-rules" element={<PublicationRules />} />
-      <Route path="/dashboard/news" element={<ManagementNews />} />
+      <Route path="*" element={<NotFound />} />
+      {/* <Route path="/dashboard/infrastructure" element={<Infrastructure />} /> */}
+      {/* <Route path="/dashboard/public-rules" element={<PublicationRules />} /> */}
+      {/* <Route path="/dashboard/news" element={<ManagementNews />} /> */}
       {/* <Route path="/dashboard/slider" element={<SliderManagement />} /> */}
-      <Route path="/help" element={<Help />} />
-      <Route path="/settings" element={<Settings />} />
     </Routes>
   );
 }

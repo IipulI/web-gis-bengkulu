@@ -2,10 +2,10 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface IUser {
   userId: string | null;
-  token: string | null;
-  role: string | null;
   name: string | null;
   username: string | null;
+  role: string | null;
+  token: string | null;
 }
 
 // ✅ Ambil dari localStorage jika ada

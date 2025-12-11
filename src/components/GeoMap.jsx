@@ -7,7 +7,7 @@ const GeoMap = ({
   activeLayerData = [],
 }) => {
   return (
-    <MapContainer center={center} zoom={zoom} className="w-full h-96">
+    <MapContainer center={center} zoom={zoom} className="w-full min-h-full">
       <TileLayer
         attribution="&copy; OpenStreetMap"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

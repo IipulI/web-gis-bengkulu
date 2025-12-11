@@ -8,17 +8,17 @@ const Sidebar = () => {
   const navLinks = [
     { name: "Dashboard", icon: Home, path: "/dashboard" },
     // { name: "Upload Data GIS", icon: Layers, path: "/gis-upload" },
-    { name: "Peta & Layer", icon: Map, path: "/map-layer" },
-    { name: "Laporan Data Aset", icon: FileText, path: "/report" },
+    { name: "Peta & Layer", icon: Map, path: "/dashboard/map-layer" },
+    { name: "Laporan Data Aset", icon: FileText, path: "/dashboard/report" },
   ];
 
   const footerLinks = [
-    { name: "Bantuan", icon: HelpCircle, path: "/help" },
-    { name: "Pengaturan", icon: Settings, path: "/settings" },
+    { name: "Bantuan", icon: HelpCircle, path: "/dashboard/help" },
+    { name: "Pengaturan", icon: Settings, path: "/dashboard/settings" },
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+    <aside className={`w-64 bg-white border-r border-gray-200 flex flex-col `}>
       {/* Header */}
       <div className="p-6 border-b border-gray-200 flex items-center gap-2">
         <img
@@ -27,7 +27,7 @@ const Sidebar = () => {
           className="w-10 h-10"
         />
         <span className="font-semibold text-base text-gray-800">
-          Data Aset Kota Bengkulu
+          Database Aset Kota Bengkulu
         </span>
       </div>
 

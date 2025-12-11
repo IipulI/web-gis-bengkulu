@@ -19,14 +19,13 @@ const MapPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [slideIndex, setSlideIndex] = useState(0);
+  const [mapType, setMapType] = useState("osm");
 
   const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedPoint) setSlideIndex(0);
   }, [selectedPoint]);
-
-  console.log("selected point", selectedPoint);
 
   const center = [-3.8106, 102.2955];
 
@@ -115,33 +114,97 @@ const MapPage = () => {
       // Standarisasi properti deskriptif
       const p = feature.properties || {};
 
-      const detail = {
-        id: feature.id || null,
-        name: p.name || p.NAMA || "Tanpa nama",
-        description: p.DESKRIPSI || p.DESCRIPTION || p.REMARK || "-",
-        year: p.TAHUN || p.YEAR || "-",
-        regNumber: p.NO_REG || p.REGISTER || "-",
-        assetCode: p.KODE_ASET || p.ASET || "-",
-        condition: p.KONDISI || p.CONDITION || "-",
-        maintenanceBy: p.MAINTENANCE || p.DIPELIHARA_OLEH || "-",
-        category:
-          geomType === "Point"
-            ? "Point"
-            : geomType === "MultiLineString"
-            ? "Line"
-            : "Polygon",
+      console.log("on each feature", p);
 
-        // FIX DI SINI
-        meta: {
-          ...p,
-          geometryType: geomType, // <--- WAJIB
-        },
+      let detail = {};
 
-        attachments: feature.attachments || [],
-        coords,
-      };
+      if (p.type == "Bangunan Gedung") {
+        detail = {
+          id: feature.id || "-",
+          name: p.namaBangunan || p.name || "-",
+          description:
+            p.DESKRIPSI || p.DESCRIPTION || p.REMARK || "Bangunan Gedung",
+          year: p.tahunPengadaan || p.TAHUN || "2024",
+          regNumber: p.nomorRegister || p.NO_REG || "-",
+          assetCode: p.KODE_ASET || p.ASET || "-",
+          condition: p.KONDISI || p.CONDITION || "Aktif",
+          maintenanceBy:
+            p.MAINTENANCE || p.DIPELIHARA_OLEH || "Dinas PUPR Kota Bengkulu",
 
-      setSelectedPoint(detail);
+          category:
+            geomType === "Polygon"
+              ? "Point"
+              : geomType === "MultiLineString"
+              ? "Line"
+              : "Polygon",
+
+          meta: {
+            jenisBangunan: p.jenisBangunan || "-",
+            luasBangunan: p.luasBangunan || "-",
+            lokasi: p.lokasi || "-",
+            geometryType: geomType,
+            ...p,
+          },
+
+          attachments: feature.attachments || [],
+          coords,
+        };
+        setSelectedPoint(detail);
+      } else if (p.type === "Jalan") {
+        detail = {
+          id: feature.id || "-",
+          name: p.nama || p.name || "Nama Jalan",
+          description: p.fungsi || "Data jalan Kota Bengkulu",
+          year: p.tahunPengadaan || p.TAHUN || "-",
+          regNumber: p.noRegister || p.NO_REG || "-",
+          assetCode: p.nomorRuas || "-",
+          condition: p.KONDISI || p.CONDITION || "-",
+          maintenanceBy: p.sumberData || "Dinas PUPR Kota Bengkulu",
+
+          category: "Line",
+
+          meta: {
+            panjangJalan: p.PanjangJalan || "-",
+            fungsi: p.fungsi || "-",
+            nomorRuas: p.nomorRuas || "-",
+            tahunPerbaikanTerakhir: p.tahunPerbaikanTerakhir || "-",
+            sumberData: p.sumberData || "-",
+            geometryType: geomType,
+            ...p,
+          },
+
+          attachments: feature.attachments || [],
+          coords,
+        };
+        setSelectedPoint(detail);
+      } else if (p.type === "Jembatan") {
+        detail = {
+          id: feature.id || "-",
+          name: p.name || `Jembatan di ${p.lokasi || "-"}`,
+          description: p.fungsiJalanDihubungkan || "Jembatan penghubung jalan",
+          year: p.tahunPengadaan || "-",
+          regNumber: p.nomorRegister || "-",
+          assetCode: `JBT-${feature.id || "000"}`, // bisa diubah jika ada kode aset resmi
+          condition: p.KONDISI || p.CONDITION || "-",
+          maintenanceBy: p.sumberData || "Dinas PUPR Kota Bengkulu",
+
+          category: "Point", // biasanya jembatan = line
+
+          meta: {
+            lokasi: p.lokasi || "-",
+            fungsiJalanDihubungkan: p.fungsiJalanDihubungkan || "-",
+            tahunPerbaikanTerakhir: p.tahunPerbaikanTerakhir || "-",
+            geometryType: geomType,
+            ...p,
+          },
+
+          attachments: feature.attachments || [],
+          coords,
+        };
+        setSelectedPoint(detail);
+      }
+
+      console.log(selectedPoint);
     });
   };
 
@@ -162,18 +225,46 @@ const MapPage = () => {
 
   const clearLayers = () => setActiveLayers([]);
 
+  const baseMaps = {
+    osm: {
+      label: "OSM",
+      url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    },
+    satellite: {
+      label: "Satellite",
+      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    },
+    googleStreet: {
+      label: "G-Map",
+      url: "http://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+      subdomains: ["mt0", "mt1", "mt2", "mt3"],
+    },
+    googleSat: {
+      label: "G-Sat",
+      url: "http://mt0.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+      subdomains: ["mt0", "mt1", "mt2", "mt3"],
+    },
+    dark: {
+      label: "Dark",
+      url: "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
+    },
+  };
+
+  console.log(selectedPoint);
+
   return (
     <div className="relative w-full h-screen bg-gray-100 overflow-hidden">
       <MapContainer
         zoomControl={false}
-        center={center as[number ,number]}
+        center={center as [number, number]}
         zoom={12.5}
         className="w-full h-full z-0"
       >
         <ZoomControl position="topright" />
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="© OpenStreetMap contributors"
+          url={baseMaps[mapType].url}
+          subdomains={baseMaps[mapType].subdomains ?? ["a", "b", "c"]}
+          attribution={baseMaps[mapType].label}
         />
 
         <LocationTracker />
@@ -184,7 +275,7 @@ const MapPage = () => {
             data={layer.data}
             style={{
               color: layer.color,
-              weight: 2,
+              weight: 3,
             }}
             onEachFeature={(f, l) => onEachFeature(f, l)}
           />
@@ -201,6 +292,25 @@ const MapPage = () => {
       >
         📚 Katalog Layer
       </button>
+      {/* BASEMAP SWITCHER */}
+      <div className="absolute top-3 right-4 bg-white rounded-xl shadow p-2 flex space-x-2 z-[6000]">
+        {Object.keys(baseMaps).map((key) => (
+          <button
+            key={key}
+            onClick={() => setMapType(key)}
+            className={`
+        px-3 py-1 rounded-lg text-sm font-medium transition
+        ${
+          mapType === key
+            ? "bg-emerald-600 text-white shadow"
+            : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+        }
+      `}
+          >
+            {baseMaps[key].label}
+          </button>
+        ))}
+      </div>
 
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white px-4 py-1.5 rounded-full shadow text-xs z-[5000]">
         Latitude: {coords.lat} | Longitude: {coords.lng}
@@ -227,7 +337,6 @@ const MapPage = () => {
         <div className="p-4 overflow-y-auto h-[calc(100%-150px)] space-y-3">
           {filteredLayers.map((layer) => {
             const active = activeLayers.some((l) => l.id === layer.id);
-            console.log("Layer", layer);
 
             return (
               <div
@@ -366,52 +475,67 @@ const MapPage = () => {
               </div> */}
 
               {/* =============================
-             4. INFORMASI BERBEDA BERDASARKAN TIPE
-        ============================== */}
-              {/* <div>
-                <h3 className="font-semibold text-gray-700 mb-2">
-                  📐 Analisis Geometri
-                </h3>
+   4. INFORMASI BERBEDA BERDASARKAN TIPE
+============================== */}
+              {selectedPoint.meta?.type && (
+                <div>
+                  <h3 className="font-semibold text-2xl text-gray-700 mb-2">
+                    📐 Detail Berdasarkan Tipe
+                  </h3>
 
-                {selectedPoint.meta?.geometryType === "LineString" && (
-                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl text-sm space-y-2">
-                    <p>
-                      <span className="font-medium">Panjang (dummy):</span> 1.42
-                      km
-                    </p>
-                    <p>
-                      <span className="font-medium">
-                        Jumlah titik koordinat:
-                      </span>{" "}
-                      16
-                    </p>
-                  </div>
-                )}
+                  {/* === JALAN === */}
+                  {selectedPoint.meta.type === "Jalan" && (
+                    <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl text-sm space-y-2">
+                      <p>
+                        <span className="font-medium">Panjang Jalan:</span>{" "}
+                        {selectedPoint.meta.panjangJalan || "-"}
+                      </p>
+                      <p>
+                        <span className="font-medium">Fungsi Jalan:</span>{" "}
+                        {selectedPoint.meta.fungsi || "-"}
+                      </p>
+                      <p>
+                        <span className="font-medium">Paving / Aspal:</span>{" "}
+                        {selectedPoint.meta.bahan || "-"}
+                      </p>
+                    </div>
+                  )}
 
-                {selectedPoint.meta?.geometryType === "Polygon" && (
-                  <div className="bg-purple-50 border border-purple-200 p-4 rounded-xl text-sm space-y-2">
-                    <p>
-                      <span className="font-medium">Luas Area (dummy):</span>{" "}
-                      2.84 km²
-                    </p>
-                    <p>
-                      <span className="font-medium">Jumlah vertices:</span> 24
-                    </p>
-                  </div>
-                )}
+                  {/* === BANGUNAN GEDUNG === */}
+                  {selectedPoint.meta.type === "Bangunan Gedung" && (
+                    <div className="bg-purple-50 border border-purple-200 p-4 rounded-xl text-sm space-y-2">
+                      <p>
+                        <span className="font-medium">Jenis Bangunan:</span>{" "}
+                        {selectedPoint.meta.jenisBangunan || "-"}
+                      </p>
+                      <p>
+                        <span className="font-medium">Luas Bangunan:</span>{" "}
+                        {selectedPoint.meta.luasBangunan || "-"}
+                      </p>
+                      <p>
+                        <span className="font-medium">Lokasi:</span>{" "}
+                        {selectedPoint.meta.lokasi || "-"}
+                      </p>
+                    </div>
+                  )}
 
-                {selectedPoint.meta?.geometryType === "Point" && (
-                  <div className="bg-orange-50 border border-orange-200 p-4 rounded-xl text-sm space-y-2">
-                    <p>
-                      <span className="font-medium">Tipe:</span> Titik (Point)
-                    </p>
-                    <p>
-                      <span className="font-medium">Kategori:</span>{" "}
-                      {selectedPoint.meta?.TYPE || "Lokasi"}
-                    </p>
-                  </div>
-                )}
-              </div> */}
+                  {/* === JEMBATAN === */}
+                  {selectedPoint.meta.type === "Jembatan" && (
+                    <div className="bg-orange-50 border border-orange-200 p-4 rounded-xl text-sm space-y-2">
+                      <p>
+                        <span className="font-medium">Lokasi:</span>{" "}
+                        {selectedPoint.meta.lokasi || "-"}
+                      </p>
+                      <p>
+                        <span className="font-medium">
+                          Fungsi Jalan yang Dihubungkan:
+                        </span>{" "}
+                        {selectedPoint.meta.fungsiJalanDihubungkan || "-"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* =============================
              5. KOORDINAT

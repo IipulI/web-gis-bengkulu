@@ -140,25 +140,44 @@ export default function Home() {
               Statistik Data Aset Kota Bengkulu
             </h3>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               <div className="bg-white p-6 rounded-2xl shadow text-center">
                 <p className="text-4xl font-bold text-blue-700">124</p>
-                <p className="text-gray-600 text-sm mt-2">Gedung</p>
+                <p className="text-gray-600 text-sm mt-2">Bangunan Gedung</p>
               </div>
 
               <div className="bg-white p-6 rounded-2xl shadow text-center">
                 <p className="text-4xl font-bold text-blue-700">812</p>
-                <p className="text-gray-600 text-sm mt-2">Jalan</p>
+                <p className="text-gray-600 text-sm mt-2">
+                  Jaringan Jalan Dan Jembatan
+                </p>
               </div>
 
               <div className="bg-white p-6 rounded-2xl shadow text-center">
                 <p className="text-4xl font-bold text-blue-700">57</p>
-                <p className="text-gray-600 text-sm mt-2">Jembatan</p>
+                <p className="text-gray-600 text-sm mt-2">
+                  Drainase Perkotaan dan Pengendalian Banjir
+                </p>
               </div>
 
               <div className="bg-white p-6 rounded-2xl shadow text-center">
                 <p className="text-4xl font-bold text-blue-700">32</p>
-                <p className="text-gray-600 text-sm mt-2">Drainase</p>
+                <p className="text-gray-600 text-sm mt-2">
+                  Bangunan Sumber Daya Air dan Irigasi
+                </p>
+              </div>
+
+              <div className="bg-white p-6 rounded-2xl shadow text-center">
+                <p className="text-4xl font-bold text-blue-700">20</p>
+                <p className="text-gray-600 text-sm mt-2">Jaringan Air Minum</p>
+              </div>
+
+              <div className="bg-white p-6 rounded-2xl shadow text-center">
+                <p className="text-4xl font-bold text-blue-700">18</p>
+                <p className="text-gray-600 text-sm mt-2">
+                  Pengelolaan Air Limba dan Limbah B3 dan Sanitasi (aspal dan
+                  septiptank)
+                </p>
               </div>
             </div>
           </div>

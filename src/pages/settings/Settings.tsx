@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clearUserData } from "../../store/userSlice";
 
 const Settings = () => {
   const [activePage, setActivePage] = useState(null);
@@ -33,6 +35,12 @@ const Settings = () => {
   );
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(clearUserData());
+    navigate("/login");
+  };
 
   const renderPage = () => {
     switch (activePage) {
@@ -115,7 +123,7 @@ const Settings = () => {
               Anda yakin ingin keluar dari akun Anda?
             </p>
             <button
-              onClick={() => navigate(`/login`)}
+              onClick={handleLogout}
               className="bg-red-600 text-white w-full py-3 rounded-lg shadow hover:bg-red-700 transition"
             >
               Keluar

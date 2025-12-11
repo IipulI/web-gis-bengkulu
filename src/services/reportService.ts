@@ -1,0 +1,32 @@
+import axiosInstance from "../api/axiosInstance";
+
+export const reportService = {
+  async getAll(params = {}) {
+    const response = await axiosInstance.get("/report", {
+      params: {
+        page: params.page,
+        size: params.perPage, // ← berubah
+        search: params.search,
+        condition: params.kondisi,
+        yearBuilt: params.tahunDibuat,
+        category: params.kategori,
+        subCategory: params.subKategori,
+      },
+    });
+
+    return {
+      data: response.data.data,
+      pagination: response.data.pagination,
+    };
+  },
+  async getAllForFilter() {
+    const response = await axiosInstance.get("/report", {
+      params: {
+        page: 1,
+        size: 9999, // ambil semua data (hanya untuk filter)
+      },
+    });
+
+    return response.data.data;
+  },
+};
