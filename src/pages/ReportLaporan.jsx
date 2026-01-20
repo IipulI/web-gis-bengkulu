@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FileText, Eye, Filter } from "lucide-react";
+import { Eye, Filter } from "lucide-react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { reportService } from "../services/reportService";
@@ -220,7 +220,7 @@ const ReportLaporan = () => {
 
             {isLoading && (
               <tr>
-                <td colSpan="10" className="text-center p-6 text-gray-500">
+                <td colSpan={10} className="text-center p-6 text-gray-500">
                   Memuat data...
                 </td>
               </tr>

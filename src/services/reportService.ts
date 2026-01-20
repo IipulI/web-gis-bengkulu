@@ -1,7 +1,17 @@
 import axiosInstance from "../api/axiosInstance";
 
+interface ReportParams {
+  page?: number;
+  perPage?: number;
+  search?: string;
+  kondisi?: string;
+  tahunDibuat?: number;
+  kategori?: string;
+  subKategori?: string;
+}
+
 export const reportService = {
-  async getAll(params = {}) {
+  async getAll(params: ReportParams = {}) {
     const response = await axiosInstance.get("/report", {
       params: {
         page: params.page,

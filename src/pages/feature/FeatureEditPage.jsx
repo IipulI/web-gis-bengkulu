@@ -42,7 +42,7 @@ const FeatureEditPage = () => {
   // ============================================================
   const { data: feature, isLoading } = useQuery<FeatureData>({
     queryKey: ["features"],
-    queryFn: () => featureService.getOne(layerId, featureId),
+    queryFn: () => featureService.getOne(layerId, feature.id),
   });
 
   // ============================================================
@@ -67,11 +67,11 @@ const FeatureEditPage = () => {
       const formData = new FormData();
       formData.append("file", selectedFile as File);
 
-      return attachmentService.addAttachment(layerId, featureId, formData);
+      return attachmentService.addAttachment(layerId, feature.id, formData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["feature", layerId, featureId],
+        queryKey: ["feature", layerId, feature],
       });
       setUploadOpen(false);
       setSelectedFile(null);
@@ -96,7 +96,7 @@ const FeatureEditPage = () => {
       }
     });
 
-    editMutation.mutate(payload);
+    // editMutation.mutate(payload);
   };
 
   const handleUploadInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -164,7 +164,7 @@ const FeatureEditPage = () => {
                         className="w-full p-2 border rounded"
                       />
                     </div>
-                  )
+                  ),
                 )}
               </div>
 
