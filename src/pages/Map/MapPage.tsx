@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -20,6 +20,8 @@ const MapPage = () => {
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [slideIndex, setSlideIndex] = useState(0);
   const [mapType, setMapType] = useState("osm");
+
+  const highlightedLayerRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -88,6 +90,18 @@ const MapPage = () => {
     },
   });
 
+  const defaultLineStyle = {
+    color: "#3388ff",
+    weight: 4,
+    opacity: 0.7,
+  };
+
+  const highlightLineStyle = {
+    color: "#ff6f00",
+    weight: 7,
+    opacity: 1,
+  };
+
   // TRACK COORD
   const LocationTracker = () => {
     useMapEvents({
@@ -99,6 +113,15 @@ const MapPage = () => {
   const onEachFeature = (feature, layer) => {
     layer.on("click", () => {
       const geomType = feature.geometry.type;
+      // Reset highlight sebelumnya
+      if (highlightedLayerRef.current) {
+        highlightedLayerRef.current.setStyle(defaultLineStyle);
+      }
+
+      // Highlight layer ini
+      layer.setStyle(highlightLineStyle);
+      layer.bringToFront(); // biar paling atas
+      highlightedLayerRef.current = layer;
 
       // Tentukan koordinat point-nya
       let coords = null;
@@ -151,7 +174,17 @@ const MapPage = () => {
         };
         setSelectedPoint(detail);
       } else if (p.type === "Jalan") {
-        detail = {
+        if (highlightedLayerRef.current) {
+          highlightedLayerRef.current.setStyle(defaultLineStyle);
+        }
+
+        // Highlight jalan utama
+        layer.setStyle(highlightLineStyle);
+        highlightedLayerRef.current = layer;
+
+        // Ambil titik awal & akhir
+
+        const detail = {
           id: feature.id || "-",
           name: p.nama || p.name || "Nama Jalan",
           description: p.fungsi || "Data jalan Kota Bengkulu",
@@ -160,21 +193,12 @@ const MapPage = () => {
           assetCode: p.nomorRuas || "-",
           condition: p.KONDISI || p.CONDITION || "-",
           maintenanceBy: p.sumberData || "Dinas PUPR Kota Bengkulu",
-
           category: "Line",
-
           meta: {
-            panjangJalan: p.PanjangJalan || "-",
-            fungsi: p.fungsi || "-",
-            nomorRuas: p.nomorRuas || "-",
-            tahunPerbaikanTerakhir: p.tahunPerbaikanTerakhir || "-",
-            sumberData: p.sumberData || "-",
             geometryType: geomType,
             ...p,
           },
-
-          attachments: feature.attachments || [],
-          coords,
+          coords: layer.getBounds().getCenter(),
         };
         setSelectedPoint(detail);
       } else if (p.type === "Jembatan") {
@@ -201,6 +225,61 @@ const MapPage = () => {
           attachments: feature.attachments || [],
           coords,
         };
+        setSelectedPoint(detail);
+      } else if (
+        geomType === "Polygon" ||
+        geomType === "MultiPolygon" ||
+        p.type === "Zona"
+      ) {
+        detail = {
+          id: feature.id || "-",
+
+          name: p.NAMOBJ || "Zona",
+
+          description:
+            p.REMARK && p.REMARK !== "Tidak Ada" ? p.REMARK : "Zona RDTR",
+
+          year: "-", // data zona umumnya tidak punya tahun pengadaan
+
+          regNumber: p.KODZON || "-",
+
+          assetCode: p.KODSZN || "-",
+
+          condition: "Aktif",
+
+          maintenanceBy: "Pemerintah Daerah",
+
+          category: "Polygon",
+
+          meta: {
+            kodeZona: p.KODZON || "-",
+            subZona: p.KODSZN || "-",
+            blok: p.KODBLK || "-",
+
+            namaZona: p.NAMZON || "-",
+            namaSubZona: p.NAMSZN || "-",
+
+            luasHa: p.LUASHA || 0,
+
+            kecamatan: p.WADMKC || "-",
+            kelurahan: p.WADMKD || "-",
+            kota: p.WADMKK || "-",
+            provinsi: p.WADMPR || "-",
+
+            peruntukan: p.JNSRPR || "-",
+            kawasanStrategis: p.KKOP_1 || "-",
+            kawasanRawanBencana: p.KRB_03 || "-",
+            kawasanLindung: p.LP2B_2 || "-",
+
+            geometryType: geomType,
+            ...p,
+          },
+
+          attachments: feature.attachments || [],
+
+          coords,
+        };
+
         setSelectedPoint(detail);
       }
 
@@ -445,7 +524,7 @@ const MapPage = () => {
                     {selectedPoint.condition}
                   </p>
                   <p>
-                    <span className="font-medium">Maintenance oleh:</span>{" "}
+                    <span className="font-medium">Sumber Data:</span>{" "}
                     {selectedPoint.maintenanceBy}
                   </p>
 
@@ -488,7 +567,7 @@ const MapPage = () => {
                     <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl text-sm space-y-2">
                       <p>
                         <span className="font-medium">Panjang Jalan:</span>{" "}
-                        {selectedPoint.meta.panjangJalan || "-"}
+                        {selectedPoint.meta.panjangJalan || "-"} m
                       </p>
                       <p>
                         <span className="font-medium">Fungsi Jalan:</span>{" "}
@@ -510,7 +589,7 @@ const MapPage = () => {
                       </p>
                       <p>
                         <span className="font-medium">Luas Bangunan:</span>{" "}
-                        {selectedPoint.meta.luasBangunan || "-"}
+                        {selectedPoint.meta.luasBangunan || "-"} m2
                       </p>
                       <p>
                         <span className="font-medium">Lokasi:</span>{" "}

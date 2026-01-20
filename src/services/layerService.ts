@@ -14,30 +14,26 @@ export const layerService = {
     return response.data;
   },
 
-  async getSpecificLayerDashboard(layerId: string) {
-    const response = await axiosInstance.get(`/layer/${layerId}`);
+  async getSpecificLayerDashboard(layerId: string, page, size) {
+    const response = await axiosInstance.get(`/layer/${layerId}`, {
+      params: {
+        page,
+        size,
+      },
+    });
 
-    return response.data.data;
+    return response.data;
   },
-
   async createLayer(payload: {
-    name: string;
-    description: string;
-    geometryType: string; // LINE | POINT | POLYGON
+    fileSHP: FormData;
     color: string;
-    iconUrl: string | null;
-    metadata: {
-      crs: {
-        type: string;
-        properties: {
-          name: string;
-        };
-      };
-      z_coordinate_resolution: number;
-      xy_coordinate_resolution: number;
-    };
+    category: string;
   }) {
-    const response = await axiosInstance.post(`/layer`, payload);
+    const response = await axiosInstance.post(`/layer/imports`, payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   },
 
@@ -45,20 +41,6 @@ export const layerService = {
     layerId: string,
     payload: {
       name: string;
-      description: string;
-      geometryType: string; // LINE | POINT | POLYGON
-      color: string;
-      iconUrl: string | null;
-      metadata: {
-        crs: {
-          type: string;
-          properties: {
-            name: string;
-          };
-        };
-        z_coordinate_resolution: number;
-        xy_coordinate_resolution: number;
-      };
     }
   ) {
     return await axiosInstance.put(`/layer/${layerId}`, payload);
@@ -66,6 +48,15 @@ export const layerService = {
 
   async deleteLayer(layerId: string) {
     const response = await axiosInstance.delete(`/layer/${layerId}`);
+    return response.data;
+  },
+
+  async exportData(id: string, format: string) {
+    const response = await axiosInstance.get(`/layer/${id}/export`, {
+      params: { format },
+      responseType: "blob",
+    });
+
     return response.data;
   },
 };

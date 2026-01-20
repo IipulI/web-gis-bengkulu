@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  Layers,
   Map as MapIcon,
   Plus,
   Eye,
@@ -21,6 +20,8 @@ import {
   RefreshCw,
   Hamburger,
   XCircle,
+  Upload,
+  Link,
 } from "lucide-react";
 
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -29,6 +30,8 @@ import { layerService } from "../services/layerService";
 import { LayerSchema } from "../schemas/LayerSchema";
 import { toast } from "sonner";
 import Sidebar from "../components/Sidebar";
+import z from "zod";
+import { categoryService } from "../services/categoryService";
 
 /**
  * MapLayer (REDESIGN)
@@ -75,6 +78,8 @@ const MapLayer: React.FC = () => {
 
   const [showSidebar, setShowSidebar] = useState<boolean>(true);
 
+  const isEditMode = Boolean(editLayerId);
+
   // ===========================
   // GET ALL LAYERS
   // ===========================
@@ -87,18 +92,29 @@ const MapLayer: React.FC = () => {
     queryFn: () => layerService.getAll(),
   });
 
+  const { data: categories, isLoading: isLoadingCategories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: categoryService.getCategory,
+  });
+
+  console.log("Ini Kategori", categories);
+
   // ===========================
   // FORM
   // ===========================
+
+  const importSchema = z.object({
+    color: z.string(),
+    fileSHP: z.any(),
+    category: z.string(),
+  });
+
+  const editSchema = z.object({
+    name: z.string().min(1, "Nama wajib diisi"),
+  });
+
   const form = useForm<any>({
-    resolver: zodResolver(LayerSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      geometryType: "POLYGON",
-      color: "#16a34a",
-      iconUrl: "",
-    },
+    resolver: zodResolver(isEditMode ? editSchema : importSchema),
   });
 
   // ===========================
@@ -168,10 +184,7 @@ const MapLayer: React.FC = () => {
     setEditLayerId(layer.id);
     form.reset({
       name: layer.name,
-      description: layer.description,
-      geometryType: layer.geometryType,
       color: layer.color ?? "#16a34a",
-      iconUrl: layer.iconUrl ?? "",
     });
     setIsOpenModal(true);
     console.log("layer", layer);
@@ -186,23 +199,35 @@ const MapLayer: React.FC = () => {
   // SUBMIT
   // ===========================
   const onSubmit = (values: any) => {
-    const payload = {
-      ...values,
-      metadata: {
-        crs: {
-          type: "name",
-          properties: {
-            name: "urn:ogc:def:crs,crs:EPSG::4326,crs:EPSG::3855",
-          },
+    if (editLayerId) {
+      updateLayerMutation.mutate({
+        id: editLayerId,
+        data: {
+          name: values.name,
         },
-        z_coordinate_resolution: 0.0001,
-        xy_coordinate_resolution: 0.0000000000025,
-      },
-    };
+      });
+    } else {
+      const formData = new FormData();
 
-    if (editLayerId)
-      updateLayerMutation.mutate({ id: editLayerId, data: payload });
-    else createLayerMutation.mutate(payload);
+      formData.append("color", values.color);
+      formData.append("category", values.category);
+      formData.append("file", values.fileSHP); // ⬅️ PENTING
+      formData.append(
+        "metadata",
+        JSON.stringify({
+          crs: {
+            type: "name",
+            properties: {
+              name: "urn:ogc:def:crs,crs:EPSG::4326,crs:EPSG::3855",
+            },
+          },
+          z_coordinate_resolution: 0.0001,
+          xy_coordinate_resolution: 0.0000000000025,
+        })
+      );
+
+      createLayerMutation.mutate(formData);
+    }
   };
 
   // ===========================
@@ -225,7 +250,19 @@ const MapLayer: React.FC = () => {
   const LayerManager = () => {
     return (
       <>
-        <aside className="col-span-3 bg-white/90 border border-gray-200 backdrop-blur-sm rounded-2xl shadow-md p-5 flex flex-col">
+        <aside
+          className="
+  col-span-3
+  bg-white/90
+  border border-gray-200
+  backdrop-blur-sm
+  rounded-2xl
+  shadow-md
+  p-5
+  flex flex-col
+  h-[calc(100vh-2rem)]
+"
+        >
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-800">
@@ -235,7 +272,7 @@ const MapLayer: React.FC = () => {
                 Kelola layer peta secara terpusat
               </p>
             </div>
-            {/* <button
+            <button
               onClick={() => {
                 setEditLayerId(null);
                 form.reset();
@@ -243,9 +280,8 @@ const MapLayer: React.FC = () => {
               }}
               className="inline-flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded-md shadow-sm hover:bg-green-700"
             >
-              <Plus className="w-4 h-4" />
-              <span className="text-sm">Tambah</span>
-            </button> */}
+              <Upload className="w-4 h-4" />
+            </button>
             <button
               onClick={() => {
                 navigate("/dashboard");
@@ -285,56 +321,69 @@ const MapLayer: React.FC = () => {
                   key={layer.id}
                   className="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-semibold flex-shrink-0"
-                      style={{ background: layer.color || "#16a34a" }}
-                    >
-                      {layer.name?.slice(0, 2).toUpperCase()}
-                    </div>
-
-                    <div className="min-w-0">
-                      <div className="font-medium text-gray-800 truncate">
-                        {layer.name}
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-semibold flex-shrink-0"
+                        style={{ background: layer.color || "#16a34a" }}
+                      >
+                        {layer.name?.slice(0, 2).toUpperCase()}
                       </div>
-                      <div className="text-xs text-gray-500 truncate">
-                        {layer.description || "—"}
+
+                      <div className="min-w-0">
+                        <div className="font-medium text-gray-800 truncate">
+                          {layer.name}
+                        </div>
+                        <div className="text-xs text-gray-500 truncate">
+                          {layer.description || "—"}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => toggleLayer(layer)}
+                        className="p-2 rounded-md hover:bg-gray-100"
+                        title={
+                          activeLayers[layer.id]
+                            ? "Sembunyikan layer"
+                            : "Tampilkan layer"
+                        }
+                      >
+                        {activeLayers[layer.id] ? (
+                          <EyeOff className="text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" />
+                        ) : (
+                          <Eye className="text-green-600" />
+                        )}
+                      </button>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => toggleLayer(layer)}
-                      className="p-2 rounded-md hover:bg-gray-100"
-                      title={
-                        activeLayers[layer.id]
-                          ? "Sembunyikan layer"
-                          : "Tampilkan layer"
-                      }
-                    >
-                      {activeLayers[layer.id] ? (
-                        <EyeOff className="text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" />
-                      ) : (
-                        <Eye className="text-green-600" />
-                      )}
-                    </button>
+                      <button
+                        onClick={() => handleEdit(layer)}
+                        className="p-2 rounded-md hover:bg-gray-100"
+                        title="Edit layer"
+                      >
+                        <Pencil className="text-green-600" />
+                      </button>
 
-                    <button
-                      onClick={() => handleEdit(layer)}
-                      className="p-2 rounded-md hover:bg-gray-100"
-                      title="Edit layer"
-                    >
-                      <Pencil className="text-green-600" />
-                    </button>
+                      <button
+                        onClick={() =>
+                          navigate(`/dashboard/layer/${layer.id}/detail`, {
+                            state: layer.name,
+                          })
+                        }
+                        className="p-2 rounded-md hover:bg-gray-100"
+                        title="Detail Layer"
+                      >
+                        <Link className="text-green-600" />
+                      </button>
 
-                    <button
-                      onClick={() => handleDelete(layer.id)}
-                      className="p-2 rounded-md hover:bg-red-50"
-                      title="Hapus layer"
-                    >
-                      <Trash2 className="text-red-600 rounded-lg hover:bg-red-50 transition-colors" />
-                    </button>
+                      <button
+                        onClick={() => handleDelete(layer.id)}
+                        className="p-2 rounded-md hover:bg-red-50"
+                        title="Hapus layer"
+                      >
+                        <Trash2 className="text-red-600 rounded-lg hover:bg-red-50 transition-colors" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
@@ -406,7 +455,7 @@ const MapLayer: React.FC = () => {
                 Peta Pratinjau
               </h1>
               <div className="text-sm text-gray-500">
-                (Klik eye untuk tampilkan)
+                (Klik Logo Mata untuk tampilkan)
               </div>
             </div>
 
@@ -542,77 +591,74 @@ const MapLayer: React.FC = () => {
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="p-6 space-y-4"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* ===== MODE EDIT ===== */}
+                  {isEditMode && (
                     <div>
                       <label className="block text-sm text-gray-600 mb-1">
                         Nama Layer
                       </label>
                       <input
+                        type="text"
                         {...form.register("name")}
-                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-200"
-                        placeholder="Contoh: Batas Desa"
-                        required
+                        className="w-full rounded-md border px-3 py-2"
+                        placeholder="Nama layer"
                       />
                     </div>
+                  )}
 
-                    <div>
-                      <label className="block text-sm text-gray-600 mb-1">
-                        Tipe Geometri
-                      </label>
-                      <select
-                        {...form.register("geometryType")}
-                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-200"
-                      >
-                        <option value="POINT">POINT</option>
-                        <option value="LINE">LINE</option>
-                        <option value="POLYGON">POLYGON</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm text-gray-600 mb-1">
-                      Deskripsi
-                    </label>
-                    <textarea
-                      {...form.register("description")}
-                      className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-200"
-                      rows={3}
-                      placeholder="Deskripsi singkat tentang layer"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                    <div>
-                      <label className="block text-sm text-gray-600 mb-1">
-                        Warna
-                      </label>
-                      <div className="flex items-center gap-3">
+                  {/* ===== MODE IMPORT ===== */}
+                  {!isEditMode && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">
+                          Warna Layer
+                        </label>
                         <input
                           type="color"
                           {...form.register("color")}
-                          className="w-14 h-10 rounded-md border"
-                          title="Pilih warna"
+                          className="w-16 h-10 rounded-md border"
                         />
-                        <div className="text-sm text-gray-500">
-                          Warna layer di peta
-                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">
+                          Kategori Layer
+                        </label>
+                        <select
+                          {...form.register("category")}
+                          className="w-full py-2 px-1 rounded-md border"
+                        >
+                          {categories.map((category, key) => (
+                            <>
+                              <option value={category.value}>
+                                {category.name}
+                              </option>
+                            </>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-sm text-gray-600 mb-1">
+                          File SHP
+                        </label>
+                        <input
+                          type="file"
+                          onChange={(e) => {
+                            form.setValue("fileSHP", e.target.files?.[0]);
+                            console.log(e.target.files?.[0]);
+                          }}
+                          className="w-full p-3 border rounded-lg"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Upload file .shp (beserta .shx, .dbf jika diperlukan)
+                        </p>
                       </div>
                     </div>
+                  )}
 
-                    <div className="md:col-span-2">
-                      <label className="block text-sm text-gray-600 mb-1">
-                        Icon URL (opsional)
-                      </label>
-                      <input
-                        {...form.register("iconUrl")}
-                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-200"
-                        placeholder="https://..."
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-end gap-3 pt-2">
+                  {/* ===== ACTION BUTTON ===== */}
+                  <div className="flex justify-end gap-3 pt-4">
                     <button
                       type="button"
                       onClick={() => {
@@ -624,11 +670,12 @@ const MapLayer: React.FC = () => {
                     >
                       Batal
                     </button>
+
                     <button
                       type="submit"
-                      className="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white shadow"
+                      className="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white"
                     >
-                      {editLayerId ? "Simpan Perubahan" : "Buat Layer"}
+                      {isEditMode ? "Simpan Perubahan" : "Import Layer"}
                     </button>
                   </div>
                 </form>

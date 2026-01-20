@@ -15,7 +15,7 @@ const ReportLaporan = () => {
 
   // PAGINATION
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(50);
 
   const { data: allItems } = useQuery({
     queryKey: ["all-report-items"],
@@ -59,15 +59,17 @@ const ReportLaporan = () => {
     return [...new Set(allItems.map((item) => item[key]).filter(Boolean))];
   };
 
+  console.log("detail item", detailItem);
+
   return (
     <DashboardLayout>
       {/* HEADER */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-green-800">Laporan Data GIS</h1>
 
-        <button className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl shadow-md flex items-center gap-2 transition">
+        {/* <button className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl shadow-md flex items-center gap-2 transition">
           <FileText className="w-4 h-4" /> Unduh Excel
-        </button>
+        </button> */}
       </div>
 
       {/* FILTER CARD */}

@@ -8,11 +8,15 @@ import {
   LogOut,
   ChevronRight,
   ArrowLeft,
+  Camera,
+  Mail,
 } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { clearUserData } from "../../store/userSlice";
+import ProfilePage from "../../components/ProfilePage";
+import SecurityPage from "../../components/SecurityPage";
 
 const Settings = () => {
   const [activePage, setActivePage] = useState(null);
@@ -47,20 +51,14 @@ const Settings = () => {
       case "profile":
         return (
           <SectionWrapper title="Profil Pengguna">
-            <p className="text-gray-700 text-sm">
-              Halaman ini dapat berisi form untuk mengubah nama, email, foto,
-              atau informasi lainnya.
-            </p>
+            <ProfilePage />
           </SectionWrapper>
         );
 
       case "security":
         return (
           <SectionWrapper title="Keamanan Akun">
-            <p className="text-gray-700 text-sm">
-              Pengaturan keamanan seperti autentikasi dua faktor atau login
-              activity.
-            </p>
+            <SecurityPage />
           </SectionWrapper>
         );
 

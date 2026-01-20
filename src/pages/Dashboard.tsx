@@ -12,6 +12,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { useQuery } from "@tanstack/react-query";
+import { dashboardService } from "../services/dashboardService";
 
 ChartJS.register(
   CategoryScale,
@@ -47,6 +49,12 @@ const heroSlides = [
 
 const Dashboard = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { data: statistics, isLoading: isLoadingStastistics } = useQuery({
+    queryKey: ["stastistics-total"],
+    queryFn: dashboardService.getStatistic,
+  });
+
+  console.log(statistics);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,32 +64,26 @@ const Dashboard = () => {
   }, []);
 
   const kategoriStats = [
-    { name: "Bangunan Gedung", value: 32, color: "#22c55e" },
-    { name: "Jaringan Jalan Dan Jembatan", value: 21, color: "#3b82f6" },
+    { color: "#22c55e" },
+    { color: "#3b82f6" },
     {
-      name: "Drainase Perkotaan dan Pengendalian Banjir",
-      value: 14,
       color: "#f97316",
     },
     {
-      name: "Bangunan Sumber Daya Air dan Irigasi",
-      value: 18,
       color: "#8b5cf6",
     },
-    { name: "Jaringan Air Minum", value: 10, color: "#ec4899" },
+    { color: "#ec4899" },
     {
-      name: "Pengelolaan Air Limbah B3 dan Sanitasi",
-      value: 10,
       color: "#a78bfa",
     },
   ];
 
   const barData = {
-    labels: kategoriStats.map((k) => k.name),
+    labels: statistics?.map((k) => k.category),
     datasets: [
       {
         label: "Jumlah Data Aset",
-        data: kategoriStats.map((k) => k.value),
+        data: statistics?.map((k) => k.total_assets),
         backgroundColor: kategoriStats.map((k) => k.color),
         borderRadius: 10,
       },
@@ -157,7 +159,7 @@ const Dashboard = () => {
 
         {/* CARD STATISTIK */}
         <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-          {kategoriStats.map((item, i) => (
+          {statistics?.map((item, i) => (
             <div
               key={i}
               className="bg-white border border-green-100 rounded-2xl p-5 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-4 hover:-translate-y-1"
@@ -170,10 +172,10 @@ const Dashboard = () => {
               </div>
               <div>
                 <p className="text-xs text-gray-500 leading-tight">
-                  {item.name}
+                  {item.category}
                 </p>
                 <h3 className="text-2xl font-bold text-green-800">
-                  {item.value}
+                  {item.total_assets}
                 </h3>
               </div>
             </div>
@@ -200,7 +202,7 @@ const Dashboard = () => {
             <div className="space-y-5 text-sm">
               {[
                 {
-                  title: "Admin Data Aset",
+                  title: "Admin Data Aset Telah Login",
                   time: "2 jam lalu",
                   color: "#22c55e",
                 },
