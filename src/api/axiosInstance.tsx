@@ -21,12 +21,12 @@ axiosInstance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 const forceLogout = () => {
   reduxStore.dispatch(clearUserData());
-  toast.error("Sesi Anda telah berakhir. Silakan login kembali.");
+  toast.error("Sesi Anda telah berakhir. Silakan login kembaliiiii.");
   setTimeout(() => {
     window.location.href = "/login";
   }, 1500);
@@ -64,14 +64,14 @@ axiosInstance.interceptors.response.use(
       }
     } else if (error.request) {
       toast.error(
-        "Tidak dapat terhubung ke server. Periksa koneksi internet Anda."
+        "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.",
       );
     } else {
       toast.error("Terjadi kesalahan yang tidak terduga.");
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;

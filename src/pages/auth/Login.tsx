@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Lock, Mail, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { authService } from "../../services/authService";
 import { setUserData } from "../../store/userSlice";
+import type { RootState } from "../../store/store";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { role, token } = useSelector((state: RootState) => state.user);
 
   const loginMutation = useMutation({
     mutationFn: async () => await authService.login({ username, password }),
@@ -42,6 +44,12 @@ export default function Login() {
     setError("");
     loginMutation.mutate();
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex flex-col items-center justify-center p-4">

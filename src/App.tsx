@@ -23,13 +23,6 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/dashboard/map-layer" element={<MapLayer />} />
-        <Route path="/dashboard/map-layer/:id" element={<LayerDetailPage />} />
-        <Route
-          path="/dashboard/layer/:id/detail"
-          element={<LayerDetailPage />}
-        />
         <Route path="/dashboard/report" element={<ReportLaporan />} />
         <Route path="/dashboard/layer-schema" element={<LayerSchemaPage />} />
         <Route
@@ -45,8 +38,18 @@ export default function App() {
           element={<LayerSchemaDetailPage />}
         />
         <Route path="/dashboard/user-management" element={<UserManagement />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["Admin", "Staff"]} />}>
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/help" element={<Help />} />
         <Route path="/dashboard/settings" element={<Settings />} />
+
+        <Route path="/dashboard/map-layer" element={<MapLayer />} />
+        <Route path="/dashboard/map-layer/:id" element={<LayerDetailPage />} />
+        <Route
+          path="/dashboard/layer/:id/detail"
+          element={<LayerDetailPage />}
+        />
       </Route>
 
       {/* <Route path="/news" element={<News />} /> */}
