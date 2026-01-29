@@ -17,6 +17,7 @@ import LayerSchemaAddPage from "./pages/layer/LayerSchemaAddPage";
 import UserManagement from "./pages/user/UserManagement";
 import LayerSchemaUpdatePage from "./pages/layer/LayerSchemaUpdatePage";
 import LayerSchemaDetailPage from "./pages/layer/LayerSchemaDetailPage";
+import UserRoleManagement from "./pages/user/UserRoleManagement";
 export default function App() {
   return (
     <Routes>
@@ -38,6 +39,7 @@ export default function App() {
           element={<LayerSchemaDetailPage />}
         />
         <Route path="/dashboard/user-management" element={<UserManagement />} />
+        <Route path="/dashboard/user-role" element={<UserRoleManagement />} />
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Admin", "Staff"]} />}>
         <Route path="/dashboard" element={<Dashboard />} />

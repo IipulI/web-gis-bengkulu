@@ -5,6 +5,7 @@ export enum Permission {
   REPORT_VIEW = "REPORT_VIEW",
   LAYER_SCHEMA_VIEW = "LAYER_SCHEMA_VIEW",
   USER_MANAGEMENT_VIEW = "USER_MANAGEMENT_VIEW",
+  USER_ROLE_VIEW = "USER_ROLE_VIEW",
 
   HELP_VIEW = "HELP_VIEW",
   SETTINGS_VIEW = "SETTINGS_VIEW",
@@ -20,6 +21,7 @@ const rolePermissions: Record<Role, Permission[]> = {
     Permission.REPORT_VIEW,
     Permission.LAYER_SCHEMA_VIEW,
     Permission.USER_MANAGEMENT_VIEW,
+    Permission.USER_ROLE_VIEW,
 
     Permission.HELP_VIEW,
     Permission.SETTINGS_VIEW,

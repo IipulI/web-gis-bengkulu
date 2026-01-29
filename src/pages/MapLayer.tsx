@@ -27,19 +27,10 @@ import {
 import DashboardLayout from "../layouts/DashboardLayout";
 import GeoMap from "../components/GeoMap";
 import { layerService } from "../services/layerService";
-import { LayerSchema } from "../schemas/LayerSchema";
 import { toast } from "sonner";
-import Sidebar from "../components/Sidebar";
 import z from "zod";
 import { categoryService } from "../services/categoryService";
 
-/**
- * MapLayer (REDESIGN)
- * - Tampilan modern / elegan
- * - Mobile friendly
- * - Warna primer: green-600
- * - Logic unchanged; hanya layout + style diperbarui
- */
 interface Layer {
   id: string;
   name: string;

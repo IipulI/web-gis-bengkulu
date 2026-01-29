@@ -25,6 +25,8 @@ const MapPage = () => {
 
   const navigate = useNavigate();
 
+  console.log(selectedPoint);
+
   useEffect(() => {
     if (selectedPoint) setSlideIndex(0);
   }, [selectedPoint]);
@@ -230,8 +232,6 @@ const MapPage = () => {
       url: "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
     },
   };
-
-  console.log(selectedPoint);
 
   return (
     <div className="relative w-full h-screen bg-gray-100 overflow-hidden">

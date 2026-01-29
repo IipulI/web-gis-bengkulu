@@ -5,7 +5,9 @@ import { useDebounce } from "use-debounce";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { userService } from "../../services/userService";
 import { toast } from "sonner";
-
+import Modal from "../../components/Modal";
+import ModalFooter from "../../components/ModalFooter";
+import Input from "../../components/Input";
 const UserManagement = () => {
   // ================= FILTER =================
   const [search, setSearch] = useState("");
@@ -473,39 +475,5 @@ const UserManagement = () => {
 };
 
 /* ================= REUSABLE ================= */
-
-const Modal = ({ title, children, onClose }) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-    <div className="bg-white w-full max-w-lg rounded-xl shadow-lg">
-      <div className="flex justify-between items-center px-5 py-4 border-b">
-        <h2 className="font-semibold text-green-800">{title}</h2>
-        <button onClick={onClose}>
-          <X className="w-5 h-5 text-gray-500" />
-        </button>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
-  </div>
-);
-
-const Input = (props) => (
-  <input
-    {...props}
-    required
-    className="w-full border border-green-300 rounded-lg px-4 py-2"
-  />
-);
-
-const ModalFooter = ({ loading }) => (
-  <div className="flex justify-end pt-4 border-t">
-    <button
-      type="submit"
-      disabled={loading}
-      className="px-4 py-2 bg-green-600 text-white rounded-lg"
-    >
-      {loading ? "Menyimpan..." : "Simpan"}
-    </button>
-  </div>
-);
 
 export default UserManagement;
