@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Eye, Filter } from "lucide-react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { reportService } from "../services/reportService";
+import { layerService } from "../services/layerService";
 // import reportService from "../services/reportService";
 
 const ReportLaporan = () => {
@@ -13,14 +14,16 @@ const ReportLaporan = () => {
   const [tahunDibuat, setTahunDibuat] = useState("");
   const [kondisi, setKondisi] = useState("");
 
-  // PAGINATION
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(50);
+  const [schema, setSchema] = useState(null);
 
   const { data: allItems } = useQuery({
     queryKey: ["all-report-items"],
     queryFn: reportService.getAllForFilter,
   });
+
+  // PAGINATION
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(50);
 
   // FETCH DATA
   const { data, isLoading } = useQuery({
@@ -59,7 +62,47 @@ const ReportLaporan = () => {
     return [...new Set(allItems?.map((item) => item[key]).filter(Boolean))];
   };
 
+  const extractSubCategoryByKategori = () => {
+    if (!kategori) return [];
+
+    return [
+      ...new Set(
+        allItems
+          ?.filter((item) => item.category === kategori)
+          .map((item) => item.subCategory)
+          .filter(Boolean),
+      ),
+    ];
+  };
+
   console.log("detail item", detailItem);
+
+  const getLayerIdByKategori = (kategori) => {
+    const found = allItems?.find((i) => i.category === kategori);
+    return found?.layerId;
+  };
+
+  const layerId = useMemo(
+    () => (kategori ? getLayerIdByKategori(kategori) : null),
+    [kategori, allItems],
+  );
+
+  const { data: schemaData } = useQuery({
+    queryKey: ["schema", layerId],
+    enabled: !!layerId,
+    queryFn: () => layerService.getOneLayerSchemaReport(layerId),
+  });
+
+  const tableColumns = useMemo(() => {
+    if (!schemaData?.schema?.definition) return [];
+
+    return schemaData.schema.definition.filter(
+      (d) => d.is_visible_public !== false,
+    );
+  }, [schemaData]);
+
+  console.log("schema", schemaData);
+  console.log("tabel Kolom", tableColumns);
 
   return (
     <DashboardLayout>
@@ -96,6 +139,7 @@ const ReportLaporan = () => {
             value={kategori}
             onChange={(e) => {
               setKategori(e.target.value);
+              setSubKategori(""); // reset child
               setPage(1);
             }}
           >
@@ -107,6 +151,7 @@ const ReportLaporan = () => {
 
           {/* SUBKATEGORI */}
           <select
+            disabled={!kategori}
             className="border border-green-300 rounded-lg px-3 py-2"
             value={subKategori}
             onChange={(e) => {
@@ -115,8 +160,10 @@ const ReportLaporan = () => {
             }}
           >
             <option value="">Subkategori</option>
-            {extractUnique("subCategory").map((v) => (
-              <option key={v}>{v}</option>
+            {extractSubCategoryByKategori().map((v) => (
+              <option key={v} value={v}>
+                {v}
+              </option>
             ))}
           </select>
 
@@ -168,107 +215,107 @@ const ReportLaporan = () => {
       </div>
 
       {/* TABLE */}
-      <div className="bg-white border border-green-200 rounded-xl shadow-sm overflow-x-auto">
-        <table className="min-w-max w-full text-sm">
-          <thead className="bg-green-50 text-green-800 text-xs uppercase">
-            <tr>
-              {[
-                "No",
-                "Nama",
-                "Kategori",
-                "Subkategori",
-                "Kondisi",
-                "Tahun Dibuat",
-                "Terakhir Perbaikan",
-                "Aksi",
-              ].map((col) => (
-                <th key={col} className="px-4 py-3">
-                  {col}
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody className="divide-y">
-            {!isLoading &&
-              items.map((item, index) => (
-                <tr key={item.id} className="hover:bg-green-50/40">
-                  <td className="px-4 py-3">
-                    {(page - 1) * perPage + index + 1}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-green-700">
-                    {item.name}
-                  </td>
-                  <td className="px-4 py-3">{item.category}</td>
-                  <td className="px-4 py-3">{item.subCategory}</td>
-                  <td className="px-4 py-3">{item.condition || "-"}</td>
-                  <td className="px-4 py-3">{item.yearBuilt}</td>
-                  <td className="px-4 py-3">
-                    {item.properties.tahunPerbaikanTerakhir}
-                  </td>
-
-                  <td className="px-4 py-3">
-                    <button
-                      className="border border-green-400 text-green-600 rounded-lg px-2 py-1 hover:bg-green-100 transition"
-                      onClick={() => setDetailItem(item)}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-
-            {isLoading && (
-              <tr>
-                <td colSpan={10} className="text-center p-6 text-gray-500">
-                  Memuat data...
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="flex items-center gap-3 mb-4">
-        <span className="text-sm text-gray-700">Tampilkan:</span>
-        <select
-          value={perPage}
-          onChange={(e) => {
-            setPerPage(Number(e.target.value));
-            setPage(1); // reset ke halaman 1
-          }}
-          className="border border-green-300 rounded-lg px-3 py-2"
-        >
-          <option value={10}>10</option>
-          <option value={25}>25</option>
-          <option value={50}>50</option>
-        </select>
-      </div>
-
-      {/* PAGINATION */}
-      <div className="flex justify-between items-center mt-6">
-        <p className="text-sm text-gray-600">
-          Halaman {pagination.currentPage} dari {pagination.totalPage}
-        </p>
-
-        <div className="flex gap-2">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="px-4 py-2 border rounded-lg hover:bg-green-50 disabled:opacity-40"
-          >
-            Prev
-          </button>
-
-          <button
-            disabled={page === pagination.totalPage}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 border rounded-lg hover:bg-green-50 disabled:opacity-40"
-          >
-            Next
-          </button>
+      {!kategori ? (
+        <div className="text-center text-gray-500 p-8">
+          Silakan pilih kategori untuk menampilkan data
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="bg-white border border-green-200 rounded-xl shadow-sm overflow-x-auto">
+            <table className="min-w-max w-full text-sm">
+              <thead className="bg-green-50 text-green-800 text-xs uppercase">
+                <tr>
+                  <th className="px-4 py-3">No</th>
+
+                  {tableColumns.map((col) => (
+                    <th key={col.key} className="px-4 py-3">
+                      {col.label}
+                    </th>
+                  ))}
+
+                  <th className="px-4 py-3">Aksi</th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y">
+                {!isLoading &&
+                  items.map((item, index) => (
+                    <tr key={item.id} className="hover:bg-green-50/40">
+                      <td className="px-4 py-3">
+                        {(page - 1) * perPage + index + 1}
+                      </td>
+
+                      {tableColumns.map((col) => (
+                        <td key={col.key} className="px-4 py-3">
+                          {item[col.key] || item.properties?.[col.key] || "-"}
+                        </td>
+                      ))}
+
+                      <td className="px-4 py-3">
+                        <button
+                          className="border border-green-400 text-green-600 rounded-lg px-2 py-1 hover:bg-green-100"
+                          onClick={() => setDetailItem(item)}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+
+                {isLoading && (
+                  <tr>
+                    <td
+                      colSpan={tableColumns.length + 2}
+                      className="text-center p-6 text-gray-500"
+                    >
+                      Memuat data...
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-sm text-gray-700">Tampilkan:</span>
+            <select
+              value={perPage}
+              onChange={(e) => {
+                setPerPage(Number(e.target.value));
+                setPage(1); // reset ke halaman 1
+              }}
+              className="border border-green-300 rounded-lg px-3 py-2"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+          {/* PAGINATION */}
+          <div className="flex justify-between items-center mt-6">
+            <p className="text-sm text-gray-600">
+              Halaman {pagination.currentPage} dari {pagination.totalPage}
+            </p>
+
+            <div className="flex gap-2">
+              <button
+                disabled={page === 1}
+                onClick={() => setPage((p) => p - 1)}
+                className="px-4 py-2 border rounded-lg hover:bg-green-50 disabled:opacity-40"
+              >
+                Prev
+              </button>
+
+              <button
+                disabled={page === pagination.totalPage}
+                onClick={() => setPage((p) => p + 1)}
+                className="px-4 py-2 border rounded-lg hover:bg-green-50 disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* MODAL */}
       {detailItem && (

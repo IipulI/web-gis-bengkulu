@@ -22,6 +22,7 @@ import {
   XCircle,
   Upload,
   Link,
+  UploadCloud,
 } from "lucide-react";
 
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -58,6 +59,8 @@ interface UpdateLayerPayload {
 
 const MapLayer: React.FC = () => {
   const navigate = useNavigate();
+  const [isUpdateImportOpen, setIsUpdateImportOpen] = useState(false);
+  const [updateLayerId, setUpdateLayerId] = useState<string | null>(null);
 
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [activeLayers, setActiveLayers] = useState<Record<string, boolean>>({});
@@ -181,6 +184,20 @@ const MapLayer: React.FC = () => {
     console.log("layer", layer);
   };
 
+  const updateLayerImportMutation = useMutation({
+    mutationFn: ({ layerId, data }: { layerId: string; data: FormData }) =>
+      layerService.updateExistingLayerImport(layerId, data),
+    onSuccess: () => {
+      toast.success("Layer berhasil diperbarui");
+      setIsUpdateImportOpen(false);
+      setUpdateLayerId(null);
+      refetchLayer();
+    },
+    onError: () => {
+      toast.error("Gagal memperbarui layer");
+    },
+  });
+
   const handleDelete = (id: string) => {
     if (!confirm("Yakin ingin menghapus layer ini?")) return;
     deleteLayerMutation.mutate(id);
@@ -263,7 +280,7 @@ const MapLayer: React.FC = () => {
                 Kelola layer peta secara terpusat
               </p>
             </div>
-            <button
+            {/* <button
               onClick={() => {
                 setEditLayerId(null);
                 form.reset();
@@ -272,7 +289,7 @@ const MapLayer: React.FC = () => {
               className="inline-flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded-md shadow-sm hover:bg-green-700"
             >
               <Upload className="w-4 h-4" />
-            </button>
+            </button> */}
             <button
               onClick={() => {
                 navigate("/dashboard");
@@ -341,9 +358,9 @@ const MapLayer: React.FC = () => {
                         }
                       >
                         {activeLayers[layer.id] ? (
-                          <EyeOff className="text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" />
+                          <Eye className="text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" />
                         ) : (
-                          <Eye className="text-green-600" />
+                          <EyeOff className="text-green-600" />
                         )}
                       </button>
 
@@ -366,13 +383,25 @@ const MapLayer: React.FC = () => {
                       >
                         <Link className="text-green-600" />
                       </button>
-
                       <button
-                        onClick={() => handleDelete(layer.id)}
-                        className="p-2 rounded-md hover:bg-red-50"
-                        title="Hapus layer"
+                        onClick={() => {
+                          setEditLayerId(null);
+                          form.reset();
+                          setIsOpenModal(true);
+                        }}
+                        className="inline-flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded-md shadow-sm hover:bg-green-700"
                       >
-                        <Trash2 className="text-red-600 rounded-lg hover:bg-red-50 transition-colors" />
+                        <Upload className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setUpdateLayerId(layer.id);
+                          setIsUpdateImportOpen(true);
+                        }}
+                        className="p-2 rounded-md hover:bg-gray-100"
+                        title="Update Layer via Import"
+                      >
+                        <UploadCloud className="w-5 h-5 text-blue-600" />
                       </button>
                     </div>
                   </div>
@@ -675,6 +704,124 @@ const MapLayer: React.FC = () => {
           </div>
         )}
       </div>
+
+      {isUpdateImportOpen && updateLayerId && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => {
+              setIsUpdateImportOpen(false);
+              setUpdateLayerId(null);
+            }}
+          />
+
+          <div className="relative w-full max-w-lg mx-auto">
+            <div className="bg-white rounded-2xl shadow-2xl border overflow-hidden">
+              {/* HEADER */}
+              <div className="flex items-center justify-between px-6 py-4 border-b">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-50 rounded-md text-blue-600">
+                    <UploadCloud className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-800">
+                      Update Layer (Import)
+                    </h4>
+                    <p className="text-xs text-gray-500">
+                      Upload ulang file SHP untuk memperbarui data layer
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setIsUpdateImportOpen(false);
+                    setUpdateLayerId(null);
+                  }}
+                  className="p-2 rounded-md hover:bg-gray-100"
+                >
+                  <X className="w-5 h-5 text-gray-600" />
+                </button>
+              </div>
+
+              {/* BODY */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+
+                  const fileInput = e.currentTarget.elements.namedItem(
+                    "file",
+                  ) as HTMLInputElement;
+
+                  if (!fileInput?.files?.[0]) {
+                    toast.error("File SHP wajib diisi");
+                    return;
+                  }
+
+                  const formData = new FormData();
+                  formData.append("file", fileInput.files[0]);
+
+                  formData.append(
+                    "metadata",
+                    JSON.stringify({
+                      crs: {
+                        type: "name",
+                        properties: {
+                          name: "urn:ogc:def:crs,crs:EPSG::4326,crs:EPSG::3855",
+                        },
+                      },
+                    }),
+                  );
+
+                  updateLayerImportMutation.mutate({
+                    layerId: updateLayerId,
+                    data: formData,
+                  });
+                }}
+                className="p-6 space-y-4"
+              >
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">
+                    File SHP Baru
+                  </label>
+                  <input
+                    name="file"
+                    type="file"
+                    className="w-full p-3 border rounded-lg"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Upload file .shp untuk menggantikan data lama
+                  </p>
+                </div>
+
+                {/* ACTION */}
+                <div className="flex justify-end gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsUpdateImportOpen(false);
+                      setUpdateLayerId(null);
+                    }}
+                    className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+                  >
+                    Batal
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={updateLayerImportMutation.isLoading}
+                    className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {updateLayerImportMutation.isLoading
+                      ? "Memperbarui..."
+                      : "Update Layer"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

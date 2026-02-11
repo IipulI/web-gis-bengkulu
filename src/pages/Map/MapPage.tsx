@@ -20,8 +20,17 @@ const MapPage = () => {
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [slideIndex, setSlideIndex] = useState(0);
   const [mapType, setMapType] = useState("osm");
+  const [openCategory, setOpenCategory] = useState({});
+  const [openSubCategory, setOpenSubCategory] = useState({});
 
   const highlightedLayerRef = useRef(null);
+  const mapRef = useRef(null);
+
+  const toggleCategory = (cat) =>
+    setOpenCategory((p) => ({ ...p, [cat]: !p[cat] }));
+
+  const toggleSubCategory = (key) =>
+    setOpenSubCategory((p) => ({ ...p, [key]: !p[key] }));
 
   const navigate = useNavigate();
 
@@ -156,10 +165,23 @@ const MapPage = () => {
       // KOORDINAT
       // ===============================
       let coords;
+
       if (geomType === "Point") {
         coords = layer.getLatLng();
+
+        mapRef.current?.flyTo(coords, 17, {
+          animate: true,
+          duration: 0.8,
+        });
       } else {
-        coords = layer.getBounds().getCenter();
+        const bounds = layer.getBounds();
+        coords = bounds.getCenter();
+
+        mapRef.current?.fitBounds(bounds, {
+          padding: [80, 80],
+          animate: true,
+          duration: 0.8,
+        });
       }
 
       // ===============================
@@ -191,11 +213,11 @@ const MapPage = () => {
     });
   };
 
-  const filteredLayers = useMemo(() => {
-    return layerList.filter((l) =>
-      l.key.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-  }, [searchTerm, layerList]);
+  //   const filteredLayers = useMemo(() => {
+  //     return layerList.filter((l) =>
+  //       l.key.toLowerCase().includes(searchTerm.toLowerCase()),
+  //     );
+  //   }, [searchTerm, layerList]);
 
   // TOGGLE LAYER — menggunakan object, bukan id
   const toggleLayer = (layerObj) =>
@@ -233,9 +255,28 @@ const MapPage = () => {
     },
   };
 
+  const groupedLayers = useMemo(() => {
+    const map = {};
+
+    layers.forEach((layer) => {
+      const category = layer.category || "Lainnya";
+      const subCategory = layer.subCategory || "Umum";
+
+      if (!map[category]) map[category] = {};
+      if (!map[category][subCategory]) map[category][subCategory] = [];
+
+      map[category][subCategory].push(layer);
+    });
+
+    return map;
+  }, [layerList]);
+
   return (
     <div className="relative w-full h-screen bg-gray-100 overflow-hidden">
       <MapContainer
+        whenReady={(e) => {
+          mapRef.current = e.target;
+        }}
         zoomControl={false}
         center={center as [number, number]}
         zoom={12.5}
@@ -313,40 +354,74 @@ const MapPage = () => {
           <button onClick={() => setCatalogOpen(false)}>✕</button>
         </div>
 
-        <div className="p-4 border-b">
+        {/* <div className="p-4 border-b">
           <input
             className="w-full border px-3 py-2 rounded"
             placeholder="Cari layer..."
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-        </div>
+        </div> */}
 
-        <div className="p-4 overflow-y-auto h-[calc(100%-150px)] space-y-3">
-          {filteredLayers.map((layer) => {
-            const active = activeLayers.some((l) => l.id === layer.id);
-
-            return (
-              <div
-                key={layer.id}
-                onClick={() => toggleLayer(layer)}
-                className={`p-3 rounded-xl border cursor-pointer ${
-                  active
-                    ? "bg-emerald-50 border-emerald-500"
-                    : "border-gray-200"
-                }`}
+        <div className="p-4 overflow-y-auto h-[calc(100%-150px)] space-y-4">
+          {Object.entries(groupedLayers).map(([category, subcats]) => (
+            <div key={category} className="border rounded-xl">
+              {/* ================= CATEGORY ================= */}
+              <button
+                onClick={() => toggleCategory(category)}
+                className="w-full flex justify-between items-center px-4 py-3 font-semibold text-emerald-700 hover:bg-emerald-50"
               >
-                <div className="flex justify-between">
-                  <h4 className={active ? "text-emerald-700" : "text-gray-800"}>
-                    {layer.key}
-                  </h4>
-                  {active && <span>✔️</span>}
+                <span>📁 {category}</span>
+                <span>{openCategory[category] ? "−" : "+"}</span>
+              </button>
+
+              {openCategory[category] && (
+                <div className="pl-3 pb-3 space-y-2">
+                  {Object.entries(subcats).map(([sub, layers]) => {
+                    const subKey = `${category}-${sub}`;
+
+                    return (
+                      <div key={subKey}>
+                        {/* ============== SUBCATEGORY ============== */}
+                        <button
+                          onClick={() => toggleSubCategory(subKey)}
+                          className="w-full flex justify-between items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded"
+                        >
+                          <span>📂 {sub}</span>
+                          <span>{openSubCategory[subKey] ? "−" : "+"}</span>
+                        </button>
+
+                        {/* ================= LAYERS ================= */}
+                        {openSubCategory[subKey] && (
+                          <div className="pl-4 mt-1 space-y-1">
+                            {layers.map((layer) => {
+                              const active = activeLayers.some(
+                                (l) => l.id === layer.id,
+                              );
+
+                              return (
+                                <div
+                                  key={layer.id}
+                                  onClick={() => toggleLayer(layer)}
+                                  className={`cursor-pointer px-3 py-2 rounded-lg border text-sm flex justify-between items-center ${
+                                    active
+                                      ? "bg-emerald-50 border-emerald-500 text-emerald-700"
+                                      : "border-gray-200 hover:bg-gray-50"
+                                  }`}
+                                >
+                                  <span>{layer.name}</span>
+                                  {active && <span>✔</span>}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  Tipe: {layer.geometryType}
-                </div>
-              </div>
-            );
-          })}
+              )}
+            </div>
+          ))}
         </div>
 
         <div className="p-4 border-t">
@@ -354,7 +429,7 @@ const MapPage = () => {
             onClick={clearLayers}
             className="w-full bg-red-500 text-white py-2 rounded"
           >
-            🗑️ Hapus Semua Layer
+            🗑️ NonAktifkan Semua Layer
           </button>
         </div>
       </div>
@@ -375,12 +450,18 @@ const MapPage = () => {
           {/* SIDEBAR */}
           <div className="w-[380px] sm:w-[430px] h-full bg-white shadow-2xl animate-slideLeft overflow-y-auto">
             {/* HEADER */}
-            <div className="px-5 py-4 bg-emerald-700 text-white flex justify-between items-center shadow">
-              <h2 className="text-lg font-semibold truncate">
-                {selectedPoint.title}
-              </h2>
+            <div className="px-5 py-4 bg-emerald-700 text-white flex items-center justify-between">
+              <div className="flex flex-col">
+                <h2 className="text-lg font-semibold leading-tight truncate">
+                  {selectedPoint.title}
+                </h2>
+                <span className="text-xs opacity-80">
+                  Detail Informasi Aset
+                </span>
+              </div>
+
               <button
-                className="text-xl font-bold"
+                className="text-xl font-bold hover:opacity-80"
                 onClick={() => setSelectedPoint(null)}
               >
                 ✕
@@ -391,22 +472,22 @@ const MapPage = () => {
               {/* =============================
             INFORMASI DETAIL (DINAMIS)
         ============================== */}
-              <div>
+              <div className="p-5 space-y-6">
                 <h3 className="font-semibold text-xl text-gray-700 mb-3">
                   🗂 Informasi Detail
                 </h3>
 
-                <div className="bg-white border rounded-xl divide-y text-sm">
+                <div className="bg-white border rounded-xl overflow-hidden">
                   {selectedPoint.meta.length > 0 ? (
                     selectedPoint.meta.map((item) => (
                       <div
                         key={item.key}
-                        className="flex justify-between gap-4 px-4 py-2"
+                        className="grid grid-cols-2 gap-3 px-4 py-3 border-b last:border-b-0"
                       >
-                        <span className="font-medium text-gray-600">
+                        <span className="text-gray-500 text-sm">
                           {item.label}
                         </span>
-                        <span className="text-gray-800 text-right">
+                        <span className="text-gray-800 text-sm font-medium text-right break-words">
                           {item.value !== null && item.value !== ""
                             ? String(item.value)
                             : "-"}
@@ -414,9 +495,9 @@ const MapPage = () => {
                       </div>
                     ))
                   ) : (
-                    <p className="p-4 text-gray-500 italic">
+                    <div className="p-4 text-gray-500 italic text-sm">
                       Tidak ada data properti.
-                    </p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -425,18 +506,23 @@ const MapPage = () => {
             KOORDINAT
         ============================== */}
               <div>
-                <h3 className="font-semibold text-xl text-gray-700 mb-2">
-                  📍 Koordinat
+                <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">
+                  Koordinat
                 </h3>
-                <div className="bg-gray-50 border rounded-xl p-4 text-sm space-y-1">
-                  <p>
-                    <span className="font-medium">Latitude:</span>{" "}
-                    {selectedPoint.coords.lat}
-                  </p>
-                  <p>
-                    <span className="font-medium">Longitude:</span>{" "}
-                    {selectedPoint.coords.lng}
-                  </p>
+
+                <div className="bg-gray-50 border rounded-xl px-4 py-3 text-sm space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Latitude</span>
+                    <span className="font-medium text-gray-800">
+                      {selectedPoint.coords.lat}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Longitude</span>
+                    <span className="font-medium text-gray-800">
+                      {selectedPoint.coords.lng}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -444,19 +530,19 @@ const MapPage = () => {
             LAMPIRAN GAMBAR
         ============================== */}
               <div>
-                <h3 className="font-semibold text-xl text-gray-700 mb-2">
-                  🖼 Lampiran Foto
+                <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">
+                  Lampiran Foto
                 </h3>
 
                 {selectedPoint.attachments?.length > 0 ? (
                   <>
-                    <div className="relative">
+                    <div className="relative rounded-xl overflow-hidden border">
                       <img
                         src={
                           environment.IMAGE_URL +
                           selectedPoint.attachments[slideIndex].file_url
                         }
-                        className="w-full h-56 object-cover rounded-xl shadow"
+                        className="w-full h-56 object-cover"
                       />
 
                       <button
@@ -467,7 +553,7 @@ const MapPage = () => {
                               : i - 1,
                           )
                         }
-                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow"
                       >
                         ◀
                       </button>
@@ -480,30 +566,28 @@ const MapPage = () => {
                               : i + 1,
                           )
                         }
-                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow"
                       >
                         ▶
                       </button>
                     </div>
 
-                    <div className="flex justify-center mt-3 space-x-1">
+                    <div className="flex justify-center mt-3 gap-1">
                       {selectedPoint.attachments.map((_, i) => (
-                        <div
+                        <span
                           key={i}
                           onClick={() => setSlideIndex(i)}
                           className={`h-2.5 w-2.5 rounded-full cursor-pointer transition ${
-                            slideIndex === i
-                              ? "bg-emerald-600 scale-110"
-                              : "bg-gray-300"
+                            slideIndex === i ? "bg-emerald-600" : "bg-gray-300"
                           }`}
                         />
                       ))}
                     </div>
                   </>
                 ) : (
-                  <p className="text-gray-500 italic text-sm">
+                  <div className="text-gray-500 italic text-sm">
                     Tidak ada gambar.
-                  </p>
+                  </div>
                 )}
               </div>
             </div>

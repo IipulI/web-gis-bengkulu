@@ -76,4 +76,14 @@ export const layerService = {
     const response = await axiosInstance.get(`/layer-schema/${id}`);
     return response.data;
   },
+
+  async getOneLayerSchemaReport(id) {
+    const response = await axiosInstance.get(`/layer/${id}`);
+    return response.data;
+  },
+
+  async updateExistingLayerImport(id, data) {
+    const response = await axiosInstance.post(`/layer/${id}/imports`, data);
+    return response.data;
+  },
 };
