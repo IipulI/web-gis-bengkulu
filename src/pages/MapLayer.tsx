@@ -809,13 +809,8 @@ const MapLayer: React.FC = () => {
 
                   <button
                     type="submit"
-                    disabled={updateLayerImportMutation.isLoading}
                     className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    {updateLayerImportMutation.isLoading
-                      ? "Memperbarui..."
-                      : "Update Layer"}
-                  </button>
+                  >Updating</button>
                 </div>
               </form>
             </div>

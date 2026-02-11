@@ -274,9 +274,6 @@ const MapPage = () => {
   return (
     <div className="relative w-full h-screen bg-gray-100 overflow-hidden">
       <MapContainer
-        whenReady={(e) => {
-          mapRef.current = e.target;
-        }}
         zoomControl={false}
         center={center as [number, number]}
         zoom={12.5}
