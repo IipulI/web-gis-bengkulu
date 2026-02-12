@@ -24,7 +24,6 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
-        <Route path="/dashboard/report" element={<ReportLaporan />} />
         <Route path="/dashboard/layer-schema" element={<LayerSchemaPage />} />
         <Route
           path="/dashboard/layer-schema/create"
@@ -42,6 +41,7 @@ export default function App() {
         <Route path="/dashboard/user-role" element={<UserRoleManagement />} />
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Admin", "Staff"]} />}>
+        <Route path="/dashboard/report" element={<ReportLaporan />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/help" element={<Help />} />
         <Route path="/dashboard/settings" element={<Settings />} />

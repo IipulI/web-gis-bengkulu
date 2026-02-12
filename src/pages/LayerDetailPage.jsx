@@ -19,6 +19,17 @@ import {
 } from "react-leaflet";
 import { attachmentService } from "../services/attachmentService";
 
+import L from "leaflet"; 
+import "leaflet/dist/leaflet.css";
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: '/img/leaflet/marker-icon-2x.png',
+  iconUrl:       '/img/leaflet/marker-icon.png',
+  shadowUrl:     '/img/leaflet/marker-shadow.png',
+});
+
 const getExportFilename = (layerName, format) => {
   const safeName = layerName?.replace(/\s+/g, "_").toLowerCase() || "layer";
 

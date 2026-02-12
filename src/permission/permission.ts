@@ -31,6 +31,8 @@ const rolePermissions: Record<Role, Permission[]> = {
     Permission.DASHBOARD_VIEW,
     Permission.MAP_LAYER_VIEW,
 
+    Permission.REPORT_VIEW,
+
     Permission.HELP_VIEW,
     Permission.SETTINGS_VIEW,
   ],

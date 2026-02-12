@@ -29,6 +29,7 @@ export const reportService = {
       pagination: response.data.pagination,
     };
   },
+
   async getAllForFilter() {
     const response = await axiosInstance.get("/report", {
       params: {
@@ -38,5 +39,11 @@ export const reportService = {
     });
 
     return response.data.data;
+  },
+
+  async getCategories() {
+    // Sesuaikan path endpoint dengan API Anda
+    const response = await axiosInstance.get("/category"); 
+    return response.data; 
   },
 };

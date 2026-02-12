@@ -4,28 +4,35 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import { reportService } from "../services/reportService";
 import { layerService } from "../services/layerService";
-// import reportService from "../services/reportService";
 
 const ReportLaporan = () => {
-  // FILTER STATES
+  // --- 1. FILTER STATES ---
   const [search, setSearch] = useState("");
   const [kategori, setKategori] = useState("");
   const [subKategori, setSubKategori] = useState("");
-  const [tahunDibuat, setTahunDibuat] = useState("");
   const [kondisi, setKondisi] = useState("");
-
-  const [schema, setSchema] = useState(null);
-
-  const { data: allItems } = useQuery({
-    queryKey: ["all-report-items"],
-    queryFn: reportService.getAllForFilter,
-  });
+  const [tahunDibuat, setTahunDibuat] = useState("");
+  const [tahunPerbaikan, setTahunPerbaikan] = useState(""); // State baru (Fix Bug)
 
   // PAGINATION
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
 
-  // FETCH DATA
+  // DETAIL MODAL
+  const [detailItem, setDetailItem] = useState(null);
+
+  // --- 2. DATA FETCHING ---
+
+  // A. Fetch Kategori (Ringan & Cepat)
+  const { data: categoryResponse } = useQuery({
+    queryKey: ["report-categories"],
+    queryFn: reportService.getCategories,
+    staleTime: 1000 * 60 * 5, // Cache 5 menit
+  });
+  
+  const listKategori = categoryResponse?.data || [];
+
+  // B. Fetch Data Laporan Utama (Tabel)
   const { data, isLoading } = useQuery({
     queryKey: [
       "report-data",
@@ -34,6 +41,7 @@ const ReportLaporan = () => {
       kategori,
       subKategori,
       tahunDibuat,
+      tahunPerbaikan,
       kondisi,
       search,
     ],
@@ -45,74 +53,73 @@ const ReportLaporan = () => {
         kategori,
         subKategori,
         tahunDibuat,
+        tahunPerbaikan, // Pastikan service menerima parameter ini
         kondisi,
       }),
+    keepPreviousData: true, // UX: Data lama tetap tampil saat loading halaman baru
+    enabled: !!kategori
   });
 
   const items = data?.data || [];
   const pagination = data?.pagination || {};
 
-  console.log(items);
 
-  // DETAIL MODAL
-  const [detailItem, setDetailItem] = useState(null);
+  // --- 3. LOGIC UTILITY & OPTIONS ---
 
-  const extractUnique = (key) => {
-    if (!items) return [];
-    return [...new Set(allItems?.map((item) => item[key]).filter(Boolean))];
-  };
-
-  const extractSubCategoryByKategori = () => {
+  // Opsi Subkategori: Filter dari listKategori berdasarkan kategori yg dipilih
+  const subCategoryOptions = useMemo(() => {
     if (!kategori) return [];
+    const selected = listKategori.find((cat) => cat.value === kategori);
+    return selected?.subCategory || [];
+  }, [kategori, listKategori]);
 
-    return [
-      ...new Set(
-        allItems
-          ?.filter((item) => item.category === kategori)
-          .map((item) => item.subCategory)
-          .filter(Boolean),
-      ),
-    ];
-  };
+  // Opsi Tahun: Generate dari tahun sekarang mundur ke 1990 (Pengganti allItems)
+  const yearOptions = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = currentYear; i >= 1990; i--) {
+      years.push(i);
+    }
+    return years;
+  }, []);
 
-  console.log("detail item", detailItem);
+  // Opsi Kondisi: Hardcode standar (Pengganti allItems)
+  const conditionOptions = ["Baik", "Rusak Ringan", "Rusak Berat"];
 
-  const getLayerIdByKategori = (kategori) => {
-    const found = allItems?.find((i) => i.category === kategori);
-    return found?.layerId;
-  };
 
-  const layerId = useMemo(
-    () => (kategori ? getLayerIdByKategori(kategori) : null),
-    [kategori, allItems],
-  );
+  // --- 4. DYNAMIC SCHEMA & TABLE COLUMNS ---
 
+  // Ambil layerId dari data item pertama yang muncul di tabel
+  const layerId = useMemo(() => {
+    if (items && items.length > 0) {
+      // Prioritas: Ambil dari data yang sudah di-fetch
+      return items[0].layerId || items[0].properties?.layerId;
+    }
+    return null;
+  }, [items]);
+
+  // Fetch Schema hanya jika layerId ditemukan
   const { data: schemaData } = useQuery({
     queryKey: ["schema", layerId],
     enabled: !!layerId,
     queryFn: () => layerService.getOneLayerSchemaReport(layerId),
+    staleTime: 1000 * 60 * 10, // Cache schema agar tidak request berulang
   });
 
+  // Generate kolom tabel dari schema
   const tableColumns = useMemo(() => {
     if (!schemaData?.schema?.definition) return [];
-
     return schemaData.schema.definition.filter(
-      (d) => d.is_visible_public !== false,
+      (d) => d.is_visible_public !== false
     );
   }, [schemaData]);
 
-  console.log("schema", schemaData);
-  console.log("tabel Kolom", tableColumns);
 
   return (
     <DashboardLayout>
       {/* HEADER */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-green-800">Laporan Data GIS</h1>
-
-        {/* <button className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl shadow-md flex items-center gap-2 transition">
-          <FileText className="w-4 h-4" /> Unduh Excel
-        </button> */}
       </div>
 
       {/* FILTER CARD */}
@@ -139,30 +146,32 @@ const ReportLaporan = () => {
             value={kategori}
             onChange={(e) => {
               setKategori(e.target.value);
-              setSubKategori(""); // reset child
+              setSubKategori(""); // Reset subkategori
               setPage(1);
             }}
           >
-            <option value="">Kategori</option>
-            {extractUnique("category").map((v) => (
-              <option key={v}>{v}</option>
+            <option value="">Semua Kategori</option>
+            {listKategori.map((cat) => (
+              <option key={cat.value} value={cat.value}>
+                {cat.name}
+              </option>
             ))}
           </select>
 
           {/* SUBKATEGORI */}
           <select
             disabled={!kategori}
-            className="border border-green-300 rounded-lg px-3 py-2"
+            className="border border-green-300 rounded-lg px-3 py-2 disabled:bg-gray-100 disabled:text-gray-400"
             value={subKategori}
             onChange={(e) => {
               setSubKategori(e.target.value);
               setPage(1);
             }}
           >
-            <option value="">Subkategori</option>
-            {extractSubCategoryByKategori().map((v) => (
-              <option key={v} value={v}>
-                {v}
+            <option value="">Semua Subkategori</option>
+            {subCategoryOptions.map((sub) => (
+              <option key={sub.value} value={sub.value}>
+                {sub.name}
               </option>
             ))}
           </select>
@@ -176,9 +185,9 @@ const ReportLaporan = () => {
               setPage(1);
             }}
           >
-            <option value="">Kondisi</option>
-            {extractUnique("condition").map((v) => (
-              <option key={v}>{v}</option>
+            <option value="">Semua Kondisi</option>
+            {conditionOptions.map((v) => (
+              <option key={v} value={v}>{v}</option>
             ))}
           </select>
 
@@ -192,32 +201,37 @@ const ReportLaporan = () => {
             }}
           >
             <option value="">Tahun Dibuat</option>
-            {extractUnique("yearBuilt").map((v) => (
-              <option key={v}>{v}</option>
+            {yearOptions.map((v) => (
+              <option key={v} value={v}>{v}</option>
             ))}
           </select>
 
           {/* TAHUN PERBAIKAN */}
           <select
             className="border border-green-300 rounded-lg px-3 py-2"
-            value={tahunDibuat}
+            value={tahunPerbaikan} // FIX: Menggunakan state yang benar
             onChange={(e) => {
-              setTahunDibuat(e.target.value);
+              setTahunPerbaikan(e.target.value); // FIX: Setter yang benar
               setPage(1);
             }}
           >
             <option value="">Tahun Perbaikan</option>
-            {extractUnique("properties.tahunPerbaikanTerakhir").map((v) => (
-              <option key={v}>{v}</option>
+            {yearOptions.map((v) => (
+              <option key={v} value={v}>{v}</option>
             ))}
           </select>
         </div>
       </div>
 
       {/* TABLE */}
-      {!kategori ? (
-        <div className="text-center text-gray-500 p-8">
-          Silakan pilih kategori untuk menampilkan data
+      {/* Jika belum pilih kategori atau data kosong, tampilkan pesan/loading */}
+      {isLoading ? (
+         <div className="text-center p-12 bg-white rounded-xl border border-green-200">
+            <span className="text-green-600 font-medium">Memuat data...</span>
+         </div>
+      ) : items.length === 0 ? (
+        <div className="text-center text-gray-500 p-8 bg-white rounded-xl border border-green-200">
+           {!kategori ? "Silakan pilih kategori untuk menampilkan data" : "Data tidak ditemukan"}
         </div>
       ) : (
         <>
@@ -225,93 +239,89 @@ const ReportLaporan = () => {
             <table className="min-w-max w-full text-sm">
               <thead className="bg-green-50 text-green-800 text-xs uppercase">
                 <tr>
-                  <th className="px-4 py-3">No</th>
-
+                  <th className="px-4 py-3 text-left">No</th>
+                  {/* Render Kolom Dinamis */}
                   {tableColumns.map((col) => (
-                    <th key={col.key} className="px-4 py-3">
+                    <th key={col.key} className="px-4 py-3 text-left">
                       {col.label}
                     </th>
                   ))}
-
-                  <th className="px-4 py-3">Aksi</th>
+                  <th className="px-4 py-3 text-center">Aksi</th>
                 </tr>
               </thead>
 
               <tbody className="divide-y">
-                {!isLoading &&
-                  items.map((item, index) => (
-                    <tr key={item.id} className="hover:bg-green-50/40">
-                      <td className="px-4 py-3">
-                        {(page - 1) * perPage + index + 1}
+                {items.map((item, index) => (
+                  <tr key={item.id} className="hover:bg-green-50/40 transition-colors">
+                    <td className="px-4 py-3">
+                      {(page - 1) * perPage + index + 1}
+                    </td>
+
+                    {/* Render Data Dinamis Sesuai Kolom */}
+                    {tableColumns.map((col) => (
+                      <td key={col.key} className="px-4 py-3">
+                        {item[col.key] || item.properties?.[col.key] || "-"}
                       </td>
+                    ))}
 
-                      {tableColumns.map((col) => (
-                        <td key={col.key} className="px-4 py-3">
-                          {item[col.key] || item.properties?.[col.key] || "-"}
-                        </td>
-                      ))}
-
-                      <td className="px-4 py-3">
-                        <button
-                          className="border border-green-400 text-green-600 rounded-lg px-2 py-1 hover:bg-green-100"
-                          onClick={() => setDetailItem(item)}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-
-                {isLoading && (
-                  <tr>
-                    <td
-                      colSpan={tableColumns.length + 2}
-                      className="text-center p-6 text-gray-500"
-                    >
-                      Memuat data...
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        className="border border-green-400 text-green-600 rounded-lg px-2 py-1 hover:bg-green-100 transition"
+                        onClick={() => setDetailItem(item)}
+                        title="Lihat Detail"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
-                )}
+                ))}
               </tbody>
             </table>
           </div>
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-sm text-gray-700">Tampilkan:</span>
-            <select
-              value={perPage}
-              onChange={(e) => {
-                setPerPage(Number(e.target.value));
-                setPage(1); // reset ke halaman 1
-              }}
-              className="border border-green-300 rounded-lg px-3 py-2"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-            </select>
-          </div>
-          {/* PAGINATION */}
-          <div className="flex justify-between items-center mt-6">
-            <p className="text-sm text-gray-600">
-              Halaman {pagination.currentPage} dari {pagination.totalPage}
-            </p>
 
-            <div className="flex gap-2">
-              <button
-                disabled={page === 1}
-                onClick={() => setPage((p) => p - 1)}
-                className="px-4 py-2 border rounded-lg hover:bg-green-50 disabled:opacity-40"
+          {/* FOOTER: LIMIT & PAGINATION */}
+          <div className="flex flex-col md:flex-row justify-between items-center mt-6 gap-4">
+            
+            {/* Limit Per Page */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-700">Tampilkan:</span>
+              <select
+                value={perPage}
+                onChange={(e) => {
+                  setPerPage(Number(e.target.value));
+                  setPage(1);
+                }}
+                className="border border-green-300 rounded-lg px-2 py-1 text-sm focus:ring-green-500"
               >
-                Prev
-              </button>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
 
-              <button
-                disabled={page === pagination.totalPage}
-                onClick={() => setPage((p) => p + 1)}
-                className="px-4 py-2 border rounded-lg hover:bg-green-50 disabled:opacity-40"
-              >
-                Next
-              </button>
+            {/* Pagination Controls */}
+            <div className="flex items-center gap-4">
+              <p className="text-sm text-gray-600">
+                Halaman <span className="font-bold">{pagination.currentPage}</span> dari {pagination.totalPage}
+              </p>
+
+              <div className="flex gap-2">
+                <button
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                >
+                  Prev
+                </button>
+
+                <button
+                  disabled={page >= pagination.totalPage}
+                  onClick={() => setPage((p) => p + 1)}
+                  className="px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </div>
         </>
@@ -319,32 +329,48 @@ const ReportLaporan = () => {
 
       {/* MODAL */}
       {detailItem && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-lg max-w-lg w-full p-5 border border-green-300">
-            <h2 className="text-xl font-bold text-green-800 mb-3">
-              {detailItem.name}
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 border border-green-100 relative">
+            <h2 className="text-xl font-bold text-green-800 mb-4 border-b pb-2">
+              {detailItem.name || "Detail Aset"}
             </h2>
 
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <p>
-                <b>Kategori:</b> {detailItem.category}
-              </p>
-              <p>
-                <b>Subkategori:</b> {detailItem.subCategory}
-              </p>
-              <p>
-                <b>Kondisi:</b> {detailItem.condition || "-"}
-              </p>
-              <p>
-                <b>Tahun Dibuat:</b> {detailItem.yearBuilt}
-              </p>
-              <p>
-                <b>Tipe Aset:</b> {detailItem.assetType}
-              </p>
+            <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
+              <div className="col-span-2 md:col-span-1">
+                <p className="text-gray-500 text-xs mb-1">Kategori</p>
+                <p className="font-semibold">{detailItem.category}</p>
+              </div>
+              <div className="col-span-2 md:col-span-1">
+                <p className="text-gray-500 text-xs mb-1">Subkategori</p>
+                <p className="font-semibold">{detailItem.subCategory}</p>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs mb-1">Kondisi</p>
+                <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                    detailItem.condition === 'Baik' ? 'bg-green-100 text-green-700' : 
+                    detailItem.condition?.includes('Rusak') ? 'bg-red-100 text-red-700' : 'bg-gray-100'
+                }`}>
+                    {detailItem.condition || "-"}
+                </span>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs mb-1">Tahun Dibuat</p>
+                <p className="font-semibold">{detailItem.yearBuilt || "-"}</p>
+              </div>
+              
+               {/* Render field dinamis di modal juga jika perlu */}
+               {tableColumns.slice(0, 4).map(col => (
+                  <div key={col.key}>
+                      <p className="text-gray-500 text-xs mb-1">{col.label}</p>
+                      <p className="font-medium text-gray-800">
+                        {detailItem[col.key] || detailItem.properties?.[col.key] || "-"}
+                      </p>
+                  </div>
+               ))}
             </div>
 
             <button
-              className="w-full mt-4 border border-green-400 py-2 rounded-lg hover:bg-green-100 text-green-700 transition"
+              className="w-full mt-6 bg-green-600 text-white py-2.5 rounded-lg hover:bg-green-700 transition font-medium shadow-lg shadow-green-200"
               onClick={() => setDetailItem(null)}
             >
               Tutup
