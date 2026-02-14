@@ -21,6 +21,25 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { clearUserData } from "../store/userSlice";
 
+interface SubCategory {
+  name: string;
+  value: string;
+}
+
+interface MenuItem {
+  name: string;
+  icon: any; // Atau gunakan LucideIcon jika kamu mengimport tipenya
+  path: string;
+  permission: Permission;
+  children?: SubCategory[]; // Tanda tanya (?) berarti opsional
+}
+
+interface MenuGroup {
+  key: string;
+  title?: string;
+  items: MenuItem[];
+}
+
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -57,7 +76,7 @@ const Sidebar = () => {
       ? "bg-emerald-500/10 text-emerald-600 shadow-[inset_0px_0px_0px_1px_rgba(16,185,129,0.2)]"
       : "text-slate-500 hover:bg-slate-50 hover:text-slate-900";
 
-  const menuGroups = [
+  const menuGroups: MenuGroup[] = [
     {
       key: "general",
       items: [
