@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin } from "lucide-react";
+import {
+  ArrowRight,
+  BarChart3,
+  Globe,
+  MapPin,
+  Play,
+  ShieldCheck,
+} from "lucide-react";
 import HomeLayout from "./layouts/HomeLayout";
 import { layerService } from "./services/layerService";
 import { dashboardService } from "./services/dashboardService";
@@ -35,281 +42,326 @@ const heroSlides = [
 
 export default function Home() {
   const navigate = useNavigate();
-
-  const { data: layer } = useQuery({
-    queryKey: ["layers"],
-    queryFn: layerService.getAll,
-  });
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const { data: stats } = useQuery({
     queryKey: ["stats"],
     queryFn: dashboardService.getStatistic,
   });
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  // ================= AUTO SLIDER =================
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-    }, 5000);
-
+    }, 6000);
     return () => clearInterval(timer);
   }, []);
 
-  const produkHukumData = [
-    {
-      id: 1,
-      type: "Perwali",
-      tahun: 2024,
-      title: "Perwali Kota Bengkulu Nomor 4 Tahun 2024",
-      desc: "Rencana Kerja Pemerintah Daerah Kota Bengkulu Tahun 2025.",
-      fileUrl:
-        "https://peraturan.bpk.go.id/Details/317020/perwali-kota-bengkulu-no-4-tahun-2024.pdf",
-    },
-    {
-      id: 2,
-      type: "Perda",
-      tahun: 2021,
-      title: "Perda Kota Bengkulu Nomor 4 Tahun 2021",
-      desc: "RTRW Kota Bengkulu Tahun 2021–2041.",
-      fileUrl:
-        "https://peraturan.bpk.go.id/Home/Details/188182/perda-kota-bengkulu-no-4-tahun-2021.pdf",
-    },
-    {
-      id: 3,
-      type: "Perwali",
-      tahun: 2022,
-      title: "Perwali Kota Bengkulu Nomor 29 Tahun 2022",
-      desc: "Perubahan susunan organisasi perangkat daerah.",
-      fileUrl:
-        "https://peraturan.bpk.go.id/Home/Details/214551/perwali-kota-bengkulu-no-29-tahun-2022",
-    },
-    {
-      id: 4,
-      type: "Perda",
-      tahun: 2020,
-      title: "Perda Kota Bengkulu Nomor 2 Tahun 2020",
-      desc: "Penyelenggaraan ketertiban umum masyarakat.",
-      fileUrl:
-        "https://peraturan.bpk.go.id/Home/Details/154594/perda-kota-bengkulu-no-2-tahun-2020",
-    },
-  ];
-
   return (
     <HomeLayout>
-      {/* ================= HERO + SLIDER ================= */}
-      <section className="relative h-[90vh] overflow-hidden text-white">
+      {/* ================= HERO SECTION ================= */}
+      <section className="relative h-screen min-h-[700px] overflow-hidden bg-slate-900">
         <AnimatePresence mode="wait">
           <motion.div
-            key={heroSlides[currentSlide].id}
-            initial={{ opacity: 0, scale: 1.1 }}
+            key={currentSlide}
+            initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
             className="absolute inset-0"
           >
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-900 z-10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-transparent to-slate-900/60 z-10" />
             <img
               src={heroSlides[currentSlide].image}
-              className="w-full h-full object-cover"
-              alt="slide"
+              className="w-full h-full object-cover select-none"
+              alt="Bengkulu Infrastructure"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
           </motion.div>
         </AnimatePresence>
 
-        <div className="relative z-10 flex items-center justify-center h-full text-center px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl"
-          >
-            <h2 className="text-4xl md:text-6xl font-extrabold leading-tight">
-              Basis Data Infrastruktur Kota Bengkulu
-            </h2>
-
-            <p className="mt-6 text-lg text-blue-100">
-              {heroSlides[currentSlide].desc}
-            </p>
-
-            {/* <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate(`/map`)}
-              className="mt-10 bg-blue-600 hover:bg-blue-700 px-10 py-4 rounded-2xl font-semibold shadow-xl"
+        <div className="relative z-20 h-full flex items-center">
+          <div className="max-w-7xl mx-auto px-6 w-full">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="max-w-3xl"
             >
-              Lihat Peta Interaktif
-            </motion.button> */}
-          </motion.div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-md mb-6">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-[0.2em]">
+                  Official Government Portal
+                </span>
+              </div>
+
+              <h1 className="text-5xl md:text-7xl font-black text-white leading-[1.1] mb-6">
+                {heroSlides[currentSlide].title.split(" ").map((word, i) => (
+                  <span key={i} className={i === 2 ? "text-emerald-500" : ""}>
+                    {word}{" "}
+                  </span>
+                ))}
+              </h1>
+
+              <p className="text-lg md:text-xl text-slate-300 leading-relaxed mb-10 max-w-2xl">
+                {heroSlides[currentSlide].desc}
+              </p>
+
+              <div className="flex flex-wrap gap-4">
+                <button
+                  onClick={() => navigate("/map")}
+                  className="group bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 transition-all shadow-xl shadow-emerald-900/20 active:scale-95"
+                >
+                  Eksplorasi Peta Interaktif
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+                <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-8 py-4 rounded-2xl font-bold transition-all">
+                  Pelajari Lebih Lanjut
+                </button>
+              </div>
+            </motion.div>
+          </div>
         </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 text-white/30"
+        >
+          <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1">
+            <div className="w-1 h-2 bg-emerald-500 rounded-full" />
+          </div>
+        </motion.div>
       </section>
 
-      {/* ================= VISI MISI ================= */}
-      <section className="bg-white py-24">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-14 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h3 className="text-3xl font-bold text-slate-900 mb-5">
-              Sekilas Database Aset
-            </h3>
+      {/* ================= SEKILAS & VIDEO ================= */}
+      <section className="py-32 bg-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-50 skew-x-12 translate-x-20 -z-10" />
 
-            <p className="text-slate-600 leading-relaxed mb-8">
-              Sistem Basis Data Infrastruktur Kota Bengkulu menyediakan
-              transparansi, efisiensi, dan kemudahan akses terhadap data
-              pembangunan infrastruktur kota.
+        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-20 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-sm font-black text-emerald-600 uppercase tracking-[0.3em] mb-4">
+              Core Information
+            </h2>
+            <h3 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-8">
+              Pusat Kendali Data <br /> Infrastruktur Wilayah.
+            </h3>
+            <p className="text-slate-500 text-lg leading-relaxed mb-10">
+              Sistem Basis Data Infrastruktur Kota Bengkulu dirancang untuk
+              menjadi tulang punggung pengambilan keputusan berbasis data bagi
+              pemerintah dan masyarakat.
             </p>
 
-            <ul className="space-y-4 text-slate-700">
-              <li>✔ Kebijakan pembangunan lebih terarah</li>
-              <li>✔ Pemetaan GIS seluruh wilayah kota</li>
-              <li>✔ Transparansi aset daerah</li>
-            </ul>
+            <div className="grid grid-cols-2 gap-6 mb-10">
+              {[
+                {
+                  title: "Kebijakan Terarah",
+                  icon: <Globe className="w-5 h-5" />,
+                },
+                { title: "Pemetaan GIS", icon: <MapPin className="w-5 h-5" /> },
+                {
+                  title: "Transparansi Aset",
+                  icon: <ShieldCheck className="w-5 h-5" />,
+                },
+                {
+                  title: "Efisiensi Publik",
+                  icon: <BarChart3 className="w-5 h-5" />,
+                },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 group hover:border-emerald-200 transition-colors"
+                >
+                  <div className="p-2 rounded-lg bg-white shadow-sm text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                    {item.icon}
+                  </div>
+                  <span className="font-bold text-slate-700">{item.title}</span>
+                </div>
+              ))}
+            </div>
 
-            <div className="mt-8">
-              <p className="font-semibold text-slate-900">Dedy Wahyudi</p>
-              <p className="text-sm text-slate-500">Walikota Bengkulu</p>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-slate-200 overflow-hidden">
+                <img src="https://via.placeholder.com/150" alt="Walikota" />
+              </div>
+              <div>
+                <p className="font-black text-slate-900 leading-none">
+                  Dedy Wahyudi, S.E., M.M.
+                </p>
+                <p className="text-xs font-bold text-slate-400 uppercase mt-1">
+                  Walikota Bengkulu
+                </p>
+              </div>
             </div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="rounded-3xl overflow-hidden shadow-2xl"
+            viewport={{ once: true }}
+            className="relative group"
           >
-            <iframe
-              className="w-full h-[340px]"
-              src="https://www.youtube.com/embed/FTMJfvlfwxM"
-              allowFullScreen
-            />
+            <div className="absolute -inset-4 bg-emerald-500/10 rounded-[2.5rem] blur-2xl group-hover:bg-emerald-500/20 transition-all" />
+            <div className="relative aspect-video rounded-[2rem] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] bg-slate-900">
+              <iframe
+                className="w-full h-full opacity-80"
+                src="https://www.youtube.com/embed/FTMJfvlfwxM"
+                allowFullScreen
+              />
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:scale-110 transition-transform">
+                <div className="w-20 h-20 rounded-full bg-emerald-500 flex items-center justify-center shadow-2xl">
+                  <Play className="w-8 h-8 text-white fill-white ml-1" />
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ================= STATISTIK ================= */}
-      <section className="bg-gradient-to-b from-blue-50 via-sky-50 to-white py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <h3 className="text-3xl font-bold text-slate-900 text-center mb-14">
-            Statistik Data Aset
-          </h3>
+      {/* ================= STATISTIK PREMIUM ================= */}
+      <section className="py-32 bg-slate-900 text-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <h3 className="text-sm font-black text-emerald-500 uppercase tracking-[0.3em] mb-4">
+              Data Statistics
+            </h3>
+            <h2 className="text-4xl md:text-5xl font-black mb-6">
+              Transparansi Angka Aset
+            </h2>
+            <p className="text-slate-400">
+              Ringkasan distribusi aset infrastruktur yang tercatat dalam sistem
+              informasi geografis secara aktual.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
             {stats?.map((stat, i) => (
               <motion.div
                 key={i}
-                whileHover={{ y: -8, scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 200 }}
-                className="relative overflow-hidden bg-white rounded-3xl shadow-xl border flex flex-col"
+                whileHover={{ y: -10 }}
+                className="bg-white/5 border border-white/10 p-10 rounded-[2.5rem] backdrop-blur-xl relative overflow-hidden group transition-all hover:bg-white/10"
               >
-                {/* GRADIENT ACCENT */}
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-sky-400 to-cyan-400" />
-
-                {/* HEADER */}
-                <div className="p-8 pb-6">
-                  <p className="text-5xl font-extrabold text-blue-600">
-                    {stat.total_assets}
-                  </p>
-                  <p className="mt-2 text-slate-800 font-semibold leading-snug">
-                    {stat.category}
-                  </p>
+                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <BarChart3 className="w-24 h-24 text-emerald-500" />
                 </div>
 
-                {/* DIVIDER */}
-                <div className="px-8">
-                  <div className="h-px bg-slate-100" />
-                </div>
+                <p className="text-6xl font-black text-white mb-2 tracking-tighter">
+                  {stat.total_assets}
+                </p>
+                <h4 className="text-xl font-bold text-emerald-400 mb-8 uppercase tracking-wide">
+                  {stat.category}
+                </h4>
 
-                {/* SUB CATEGORY */}
-                {stat.sub_categories?.length > 0 && (
-                  <div className="p-6 pt-4 mt-auto">
-                    <p className="text-xs uppercase tracking-wide text-slate-400 mb-4">
-                      Sub Kategori
-                    </p>
-
-                    <div className="space-y-3">
-                      {stat.sub_categories.map((sub, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-slate-50 to-slate-100 px-4 py-3 text-sm hover:from-blue-50 hover:to-sky-50 transition"
-                        >
-                          <div className="flex flex-col">
-                            <span className="text-slate-800 font-medium">
-                              {sub.name}
-                            </span>
-                            <span className="text-xs text-slate-400">
-                              {sub.layers_count} layer
-                            </span>
-                          </div>
-
-                          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-                            {sub.total_assets}
-                          </span>
-                        </div>
-                      ))}
+                <div className="space-y-4">
+                  {stat.sub_categories?.slice(0, 3).map((sub, idx) => (
+                    <div
+                      key={idx}
+                      className="flex justify-between items-center py-3 border-b border-white/5"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-slate-300">
+                          {sub.name}
+                        </span>
+                        <span className="text-[10px] uppercase text-slate-500 tracking-wider font-black">
+                          {sub.layers_count} layers
+                        </span>
+                      </div>
+                      <span className="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-lg text-xs font-black">
+                        {sub.total_assets}
+                      </span>
                     </div>
-                  </div>
-                )}
+                  ))}
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ================= PETA INTERAKTIF ================= */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h3 className="text-3xl font-bold text-slate-900 mb-14">
-            Peta Interaktif
-          </h3>
+      {/* ================= PRODUK HUKUM (GRID MODERN) ================= */}
+      {/* <section className="py-32 bg-[#f8fafc]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div>
+              <h3 className="text-sm font-black text-emerald-600 uppercase tracking-[0.3em] mb-4">
+                Legal Foundation
+              </h3>
+              <h2 className="text-4xl font-black text-slate-900">
+                Produk Hukum Terbaru
+              </h2>
+            </div>
+            <button className="text-sm font-black uppercase text-slate-900 flex items-center gap-2 hover:gap-4 transition-all group">
+              Lihat Semua Dokumen{" "}
+              <ArrowRight className="w-4 h-4 text-emerald-600" />
+            </button>
+          </div>
 
-          <motion.div
-            whileHover={{ scale: 1.03 }}
-            onClick={() => navigate(`/map`)}
-            className="cursor-pointer max-w-xl mx-auto bg-gradient-to-br from-blue-100 to-white p-14 rounded-3xl shadow-xl border"
-          >
-            <MapPin className="w-24 h-24 text-blue-700 mx-auto mb-6" />
-            <p className="text-lg font-semibold text-slate-700">
-              Eksplorasi peta aset daerah
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ================= PRODUK HUKUM ================= */}
-      <section className="bg-slate-50 py-24">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h3 className="text-3xl font-bold text-slate-900 mb-14">
-            Produk Hukum Kota Bengkulu
-          </h3>
-
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-4 gap-6">
             {produkHukumData.map((item) => (
               <motion.a
-                whileHover={{ y: -6 }}
+                whileHover={{ scale: 1.02 }}
                 key={item.id}
                 href={item.fileUrl}
                 target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white rounded-3xl p-7 shadow-lg border text-left flex flex-col"
+                className="bg-white group rounded-3xl p-8 shadow-sm border border-slate-200/60 hover:shadow-2xl hover:shadow-slate-200 transition-all flex flex-col h-full"
               >
-                <p className="text-xs text-slate-500 mb-2">
-                  {item.type} • {item.tahun}
-                </p>
-                <h4 className="font-semibold text-slate-900 mb-3">
+                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-6 group-hover:bg-emerald-600 transition-colors">
+                  <FileText className="w-6 h-6 text-slate-400 group-hover:text-white" />
+                </div>
+                <div className="flex gap-2 mb-4">
+                  <span className="text-[10px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded-md uppercase tracking-wider">
+                    {item.type}
+                  </span>
+                  <span className="text-[10px] font-black bg-emerald-50 text-emerald-600 px-2 py-1 rounded-md uppercase tracking-wider">
+                    {item.tahun}
+                  </span>
+                </div>
+                <h4 className="font-bold text-slate-900 mb-4 line-clamp-2 leading-snug group-hover:text-emerald-600 transition-colors">
                   {item.title}
                 </h4>
-                <p className="text-sm text-slate-600 mb-6 line-clamp-2">
-                  {item.desc}
+                <p className="text-sm text-slate-500 mb-8 line-clamp-3 italic">
+                  "{item.desc}"
                 </p>
-                <span className="mt-auto text-blue-700 text-sm font-semibold">
-                  📄 Buka Dokumen →
-                </span>
+                <div className="mt-auto flex items-center justify-between">
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-900">
+                    Download PDF
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-emerald-500 group-hover:translate-x-1 transition-transform" />
+                </div>
               </motion.a>
             ))}
+          </div>
+        </div>
+      </section> */}
+
+      {/* ================= FINAL CTA ================= */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-7xl mx-auto rounded-[3rem] bg-emerald-600 p-12 md:p-20 relative overflow-hidden shadow-2xl shadow-emerald-900/20">
+          <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+            <MapPin className="w-[400px] h-[400px] -translate-y-20 translate-x-20 text-white" />
+          </div>
+          <div className="relative z-10 max-w-2xl text-white">
+            <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">
+              Siap mengeksplorasi data kota Anda?
+            </h2>
+            <p className="text-emerald-100 text-lg mb-10 opacity-90">
+              Buka peta interaktif sekarang untuk melihat visualisasi data aset
+              infrastruktur Kota Bengkulu secara transparan.
+            </p>
+            <button
+              onClick={() => navigate("/map")}
+              className="bg-slate-900 hover:bg-black text-white px-10 py-5 rounded-[1.5rem] font-black uppercase tracking-widest text-sm transition-all active:scale-95 shadow-2xl"
+            >
+              Buka Peta Interaktif
+            </button>
           </div>
         </div>
       </section>

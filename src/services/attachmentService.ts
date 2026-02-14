@@ -9,9 +9,17 @@ export const attachmentService = {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
 
     return response.data;
+  },
+
+  async getAttachment(layerId: string, featureId: string) {
+    const response = await axiosInstance.get(
+      `/attachment/${layerId}/${featureId}`,
+    );
+
+    return response.data.data;
   },
 };

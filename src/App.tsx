@@ -42,6 +42,7 @@ export default function App() {
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["Admin", "Staff"]} />}>
         <Route path="/dashboard/report" element={<ReportLaporan />} />
+        <Route path="/dashboard/report/:kategori" element={<ReportLaporan />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/help" element={<Help />} />
         <Route path="/dashboard/settings" element={<Settings />} />

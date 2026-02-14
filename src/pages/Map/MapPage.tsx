@@ -258,7 +258,7 @@ const MapPage = () => {
   const groupedLayers = useMemo(() => {
     const map = {};
 
-    layers.forEach((layer) => {
+    layers?.forEach((layer) => {
       const category = layer.category || "Lainnya";
       const subCategory = layer.subCategory || "Umum";
 
@@ -271,8 +271,11 @@ const MapPage = () => {
     return map;
   }, [layerList]);
 
+  console.log(groupedLayers);
+
   return (
-    <div className="relative w-full h-screen bg-gray-100 overflow-hidden">
+    <div className="relative w-full h-screen bg-slate-950 overflow-hidden font-sans">
+      {/* MAP CONTAINER */}
       <MapContainer
         zoomControl={false}
         center={center as [number, number]}
@@ -285,9 +288,7 @@ const MapPage = () => {
           subdomains={baseMaps[mapType].subdomains ?? ["a", "b", "c"]}
           attribution={baseMaps[mapType].label}
         />
-
         <LocationTracker />
-
         {geoData?.map((layer) => (
           <GeoJSON
             key={layer.id}
@@ -295,118 +296,138 @@ const MapPage = () => {
               ...layer.data,
               features: layer.data.features.map((f) => ({
                 ...f,
-                schema: layer.data.schema, // ⬅️ INJECT SCHEMA
+                schema: layer.data.schema,
               })),
             }}
             style={{
               color: layer.color,
               weight: 3,
+              fillOpacity: 0.2,
             }}
             onEachFeature={onEachFeature}
           />
         ))}
       </MapContainer>
 
-      <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-white px-6 py-2 rounded-full shadow z-[5000]">
-        Database Aset Kota Bengkulu
-      </div>
-
-      <button
-        onClick={() => setCatalogOpen(!catalogOpen)}
-        className="absolute top-3 left-4 bg-emerald-600 text-white px-4 py-2 rounded-lg shadow z-[5000]"
-      >
-        📚 Katalog Layer
-      </button>
-      {/* BASEMAP SWITCHER */}
-      <div className="absolute top-3 right-4 bg-white rounded-xl shadow p-2 flex space-x-2 z-[6000]">
-        {Object.keys(baseMaps).map((key) => (
+      {/* TOP NAVIGATION BAR - GLASSMORPHISM */}
+      <div className="absolute top-5 left-0 right-0 z-[5000] flex justify-center px-4 pointer-events-none">
+        <div className="flex items-center gap-3 pointer-events-auto">
+          {/* Tombol Katalog */}
           <button
-            key={key}
-            onClick={() => setMapType(key)}
-            className={`
-        px-3 py-1 rounded-lg text-sm font-medium transition
-        ${
-          mapType === key
-            ? "bg-emerald-600 text-white shadow"
-            : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-        }
-      `}
+            onClick={() => setCatalogOpen(!catalogOpen)}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-2xl shadow-[0_8px_30px_rgb(5,150,105,0.4)] transition-all active:scale-95 font-semibold text-sm"
           >
-            {baseMaps[key].label}
+            <span className="text-lg">layers</span>
+            Katalog Layer
           </button>
-        ))}
+
+          {/* Title Badge */}
+          <div className="bg-white/80 backdrop-blur-md border border-white/40 px-6 py-2.5 rounded-2xl shadow-xl hidden md:block">
+            <h1 className="text-slate-800 font-bold text-sm tracking-tight uppercase">
+              Database Aset{" "}
+              <span className="text-emerald-600">Kota Bengkulu</span>
+            </h1>
+          </div>
+
+          {/* Basemap Switcher */}
+          <div className="bg-white/80 backdrop-blur-md border border-white/40 p-1 rounded-2xl shadow-xl flex gap-1">
+            {Object.keys(baseMaps).map((key) => (
+              <button
+                key={key}
+                onClick={() => setMapType(key)}
+                className={`px-4 py-1.5 rounded-xl text-[11px] font-bold uppercase transition-all ${
+                  mapType === key
+                    ? "bg-slate-900 text-white shadow-md"
+                    : "text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                {baseMaps[key].label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white px-4 py-1.5 rounded-full shadow text-xs z-[5000]">
-        Latitude: {coords.lat} | Longitude: {coords.lng}
-      </div>
-
+      {/* LEFT SIDEBAR - CATALOG */}
       <div
-        className={`absolute top-0 left-0 w-[350px] h-full bg-white shadow-2xl transition-all z-[6000] ${
+        className={`absolute top-0 left-0 w-[360px] h-full bg-white/90 backdrop-blur-xl shadow-[25px_0_50px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 ease-in-out z-[6000] border-r border-white/40 flex flex-col ${
           catalogOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="bg-emerald-700 text-white px-5 py-4 flex justify-between">
-          <h2>📚 Katalog Layer</h2>
-          <button onClick={() => setCatalogOpen(false)}>✕</button>
+        <div className="pt-24 px-6 pb-6 flex justify-between items-end">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 tracking-tighter">
+              LIBRARY
+            </h2>
+            <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">
+              Daftar Layer Aset
+            </p>
+          </div>
+          <button
+            onClick={() => setCatalogOpen(false)}
+            className="p-2 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-500 transition-colors"
+          >
+            ✕
+          </button>
         </div>
 
-        {/* <div className="p-4 border-b">
-          <input
-            className="w-full border px-3 py-2 rounded"
-            placeholder="Cari layer..."
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div> */}
-
-        <div className="p-4 overflow-y-auto h-[calc(100%-150px)] space-y-4">
-          {Object.entries(groupedLayers).map(([category, subcats]) => (
-            <div key={category} className="border rounded-xl">
-              {/* ================= CATEGORY ================= */}
+        <div className="flex-1 overflow-y-auto px-6 space-y-4 custom-scrollbar">
+          {Object.entries(groupedLayers).map(([category, subcats, name]) => (
+            <div
+              key={category}
+              className="bg-white/50 border border-slate-100 rounded-3xl overflow-hidden shadow-sm"
+            >
               <button
                 onClick={() => toggleCategory(category)}
-                className="w-full flex justify-between items-center px-4 py-3 font-semibold text-emerald-700 hover:bg-emerald-50"
+                className="w-full text-left flex justify-between items-center px-5 py-4 font-bold text-slate-800 hover:bg-emerald-50/50 transition-colors"
               >
-                <span>📁 {category}</span>
-                <span>{openCategory[category] ? "−" : "+"}</span>
+                <div className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span className="text-sm tracking-tight">{category}</span>
+                </div>
+                <span className="text-slate-400">
+                  {openCategory[category] ? "−" : "+"}
+                </span>
               </button>
 
               {openCategory[category] && (
-                <div className="pl-3 pb-3 space-y-2">
+                <div className="px-3 pb-4 space-y-3 animate-fadeIn">
                   {Object.entries(subcats).map(([sub, layers]) => {
                     const subKey = `${category}-${sub}`;
-
                     return (
-                      <div key={subKey}>
-                        {/* ============== SUBCATEGORY ============== */}
+                      <div key={subKey} className="space-y-1">
                         <button
                           onClick={() => toggleSubCategory(subKey)}
-                          className="w-full flex justify-between items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded"
+                          className="w-full flex justify-between items-center px-3 py-2 text-[11px] font-black text-slate-400 uppercase tracking-[0.15em]"
                         >
-                          <span>📂 {sub}</span>
-                          <span>{openSubCategory[subKey] ? "−" : "+"}</span>
+                          {sub}
+                          <span>{openSubCategory[subKey] ? "↓" : "→"}</span>
                         </button>
 
-                        {/* ================= LAYERS ================= */}
                         {openSubCategory[subKey] && (
-                          <div className="pl-4 mt-1 space-y-1">
+                          <div className="grid grid-cols-1 gap-1 pl-1">
                             {layers.map((layer) => {
                               const active = activeLayers.some(
                                 (l) => l.id === layer.id,
                               );
-
                               return (
                                 <div
                                   key={layer.id}
                                   onClick={() => toggleLayer(layer)}
-                                  className={`cursor-pointer px-3 py-2 rounded-lg border text-sm flex justify-between items-center ${
+                                  className={`group cursor-pointer px-4 py-3 rounded-2xl border transition-all flex justify-between items-center ${
                                     active
-                                      ? "bg-emerald-50 border-emerald-500 text-emerald-700"
-                                      : "border-gray-200 hover:bg-gray-50"
+                                      ? "bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-100"
+                                      : "bg-white border-slate-100 hover:border-emerald-300 text-slate-700 hover:shadow-md"
                                   }`}
                                 >
-                                  <span>{layer.name}</span>
-                                  {active && <span>✔</span>}
+                                  <span className="text-xs font-bold leading-tight">
+                                    {layer.name}
+                                  </span>
+                                  {active && (
+                                    <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-lg">
+                                      ON
+                                    </span>
+                                  )}
                                 </div>
                               );
                             })}
@@ -421,183 +442,120 @@ const MapPage = () => {
           ))}
         </div>
 
-        <div className="p-4 border-t">
+        <div className="p-6">
           <button
             onClick={clearLayers}
-            className="w-full bg-red-500 text-white py-2 rounded"
+            className="w-full bg-slate-900 hover:bg-red-600 text-white py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all shadow-xl active:scale-95"
           >
-            🗑️ NonAktifkan Semua Layer
+            Reset Semua Layer
           </button>
         </div>
       </div>
-      {/* ===========================
-    MODAL DETAIL POINT
-=========================== */}
-      {/* =====================================================
-   DETAIL SIDEBAR (RIGHT DRAWER)
-===================================================== */}
+
+      {/* DETAIL SIDEBAR (RIGHT) */}
       {selectedPoint && (
-        <div className="fixed inset-0 z-[9500] flex">
-          {/* BACKDROP */}
+        <div className="fixed inset-0 z-[9500] flex justify-end">
           <div
-            className="flex-1 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
             onClick={() => setSelectedPoint(null)}
           />
 
-          {/* SIDEBAR */}
-          <div className="w-[380px] sm:w-[430px] h-full bg-white shadow-2xl animate-slideLeft overflow-y-auto">
-            {/* HEADER */}
-            <div className="px-5 py-4 bg-emerald-700 text-white flex items-center justify-between">
-              <div className="flex flex-col">
-                <h2 className="text-lg font-semibold leading-tight truncate">
-                  {selectedPoint.title}
-                </h2>
-                <span className="text-xs opacity-80">
-                  Detail Informasi Aset
-                </span>
-              </div>
-
+          <div className="relative w-full max-w-[420px] h-full bg-white shadow-[-20px_0_50px_rgba(0,0,0,0.2)] flex flex-col animate-slideInRight">
+            {/* Detail Image Header */}
+            <div className="relative h-64 bg-slate-200">
+              {selectedPoint.attachments?.length > 0 ? (
+                <img
+                  src={
+                    environment.IMAGE_URL +
+                    selectedPoint.attachments[slideIndex].file_url
+                  }
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100">
+                  <span className="text-4xl">📷</span>
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               <button
-                className="text-xl font-bold hover:opacity-80"
                 onClick={() => setSelectedPoint(null)}
+                className="absolute top-6 right-6 w-10 h-10 bg-white/20 backdrop-blur-md hover:bg-white/40 text-white rounded-full flex items-center justify-center transition-all"
               >
                 ✕
               </button>
+              <div className="absolute bottom-6 left-8 right-8 text-white">
+                <h2 className="text-2xl font-black leading-tight tracking-tight uppercase truncate">
+                  {selectedPoint.title}
+                </h2>
+                <p className="text-xs font-medium text-white/80 uppercase tracking-widest">
+                  Aset Informasi
+                </p>
+              </div>
             </div>
 
-            <div className="p-5 space-y-6">
-              {/* =============================
-            INFORMASI DETAIL (DINAMIS)
-        ============================== */}
-              <div className="p-5 space-y-6">
-                <h3 className="font-semibold text-xl text-gray-700 mb-3">
-                  🗂 Informasi Detail
+            <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+              {/* Detail Grid */}
+              <section>
+                <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                  Informasi Atribut
                 </h3>
-
-                <div className="bg-white border rounded-xl overflow-hidden">
-                  {selectedPoint.meta.length > 0 ? (
-                    selectedPoint.meta.map((item) => (
-                      <div
-                        key={item.key}
-                        className="grid grid-cols-2 gap-3 px-4 py-3 border-b last:border-b-0"
-                      >
-                        <span className="text-gray-500 text-sm">
-                          {item.label}
-                        </span>
-                        <span className="text-gray-800 text-sm font-medium text-right break-words">
-                          {item.value !== null && item.value !== ""
-                            ? String(item.value)
-                            : "-"}
-                        </span>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="p-4 text-gray-500 italic text-sm">
-                      Tidak ada data properti.
+                <div className="space-y-1">
+                  {selectedPoint.meta.map((item) => (
+                    <div
+                      key={item.key}
+                      className="flex justify-between py-3 border-b border-slate-50 group hover:bg-slate-50 transition-colors px-2 rounded-lg"
+                    >
+                      <span className="text-sm font-medium text-slate-500">
+                        {item.label}
+                      </span>
+                      <span className="text-sm font-black text-slate-800">
+                        {String(item.value || "-")}
+                      </span>
                     </div>
-                  )}
+                  ))}
                 </div>
-              </div>
+              </section>
 
-              {/* =============================
-            KOORDINAT
-        ============================== */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">
-                  Koordinat
+              {/* Location Badge */}
+              <section className="bg-slate-950 rounded-3xl p-6 text-white shadow-2xl">
+                <h3 className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-3">
+                  Koordinat Lokasi
                 </h3>
-
-                <div className="bg-gray-50 border rounded-xl px-4 py-3 text-sm space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Latitude</span>
-                    <span className="font-medium text-gray-800">
-                      {selectedPoint.coords.lat}
-                    </span>
+                <div className="grid grid-cols-2 gap-4 font-mono text-sm uppercase">
+                  <div>
+                    <p className="text-white/40 text-[9px] mb-1">Latitude</p>
+                    <p className="font-bold">
+                      {selectedPoint.coords.lat.toFixed(6)}
+                    </p>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Longitude</span>
-                    <span className="font-medium text-gray-800">
-                      {selectedPoint.coords.lng}
-                    </span>
+                  <div>
+                    <p className="text-white/40 text-[9px] mb-1">Longitude</p>
+                    <p className="font-bold">
+                      {selectedPoint.coords.lng.toFixed(6)}
+                    </p>
                   </div>
                 </div>
-              </div>
-
-              {/* =============================
-            LAMPIRAN GAMBAR
-        ============================== */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">
-                  Lampiran Foto
-                </h3>
-
-                {selectedPoint.attachments?.length > 0 ? (
-                  <>
-                    <div className="relative rounded-xl overflow-hidden border">
-                      <img
-                        src={
-                          environment.IMAGE_URL +
-                          selectedPoint.attachments[slideIndex].file_url
-                        }
-                        className="w-full h-56 object-cover"
-                      />
-
-                      <button
-                        onClick={() =>
-                          setSlideIndex((i) =>
-                            i === 0
-                              ? selectedPoint.attachments.length - 1
-                              : i - 1,
-                          )
-                        }
-                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow"
-                      >
-                        ◀
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          setSlideIndex((i) =>
-                            i === selectedPoint.attachments.length - 1
-                              ? 0
-                              : i + 1,
-                          )
-                        }
-                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow"
-                      >
-                        ▶
-                      </button>
-                    </div>
-
-                    <div className="flex justify-center mt-3 gap-1">
-                      {selectedPoint.attachments.map((_, i) => (
-                        <span
-                          key={i}
-                          onClick={() => setSlideIndex(i)}
-                          className={`h-2.5 w-2.5 rounded-full cursor-pointer transition ${
-                            slideIndex === i ? "bg-emerald-600" : "bg-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-gray-500 italic text-sm">
-                    Tidak ada gambar.
-                  </div>
-                )}
-              </div>
+              </section>
             </div>
           </div>
         </div>
       )}
 
-      <button
-        onClick={() => navigate("/")}
-        className="absolute bottom-3 left-4 bg-white px-4 py-2 rounded-full shadow text-sm font-medium z-[5000] hover:bg-gray-100 transition"
-      >
-        ◀ Kembali
-      </button>
+      {/* BOTTOM FLOATING CONTROLS */}
+      <div className="absolute bottom-6 left-6 z-[5000] flex gap-3">
+        <button
+          onClick={() => navigate("/")}
+          className="bg-white hover:bg-slate-50 text-slate-800 px-5 py-3 rounded-2xl shadow-xl font-bold text-xs uppercase tracking-widest transition-all border border-slate-100 active:scale-95 flex items-center gap-2"
+        >
+          <span>←</span> Kembali
+        </button>
+      </div>
+
+      <div className="absolute bottom-6 right-6 z-[5000] bg-white/80 backdrop-blur-md px-4 py-2 rounded-xl border border-white/50 shadow-lg hidden sm:block">
+        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+          {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
+        </p>
+      </div>
     </div>
   );
 };
