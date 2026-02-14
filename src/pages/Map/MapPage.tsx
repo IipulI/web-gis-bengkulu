@@ -372,7 +372,7 @@ const MapPage = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 space-y-4 custom-scrollbar">
-          {Object.entries(groupedLayers).map(([category, subcats, name]) => (
+          {Object.entries(groupedLayers).map(([category, subcats]) => (
             <div
               key={category}
               className="bg-white/50 border border-slate-100 rounded-3xl overflow-hidden shadow-sm"
