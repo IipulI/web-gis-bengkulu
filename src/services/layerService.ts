@@ -14,7 +14,7 @@ export const layerService = {
     return response.data;
   },
 
-  async getSpecificLayerDashboard(layerId: string, page, size) {
+  async getSpecificLayerDashboard(layerId: string, { page, size }) {
     const response = await axiosInstance.get(`/layer/${layerId}`, {
       params: {
         page,
@@ -44,6 +44,12 @@ export const layerService = {
     },
   ) {
     return await axiosInstance.put(`/layer/${layerId}`, payload);
+  },
+
+  async updateSpatialItem(layerId: string, featureId: string, payload: any) {
+    const response = await axiosInstance.put(`/feature/${layerId}/${featureId}`, payload);
+
+    return response.data;
   },
 
   async deleteLayer(layerId: string) {
