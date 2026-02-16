@@ -224,11 +224,13 @@ export default function Home() {
 
       {/* ================= STATISTIK PREMIUM ================= */}
       <section className="py-32 bg-slate-900 text-white relative overflow-hidden">
+        {/* Background Pattern */}
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
         </div>
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
+          {/* Header Section */}
           <div className="text-center max-w-3xl mx-auto mb-20">
             <h3 className="text-sm font-black text-emerald-500 uppercase tracking-[0.3em] mb-4">
               Data Statistics
@@ -242,46 +244,71 @@ export default function Home() {
             </p>
           </div>
 
+          {/* Grid Section */}
           <div className="grid md:grid-cols-3 gap-8">
-            {stats?.map((stat, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ y: -10 }}
-                className="bg-white/5 border border-white/10 p-10 rounded-[2.5rem] backdrop-blur-xl relative overflow-hidden group transition-all hover:bg-white/10"
-              >
-                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <BarChart3 className="w-24 h-24 text-emerald-500" />
-                </div>
+            {stats?.map((stat, i) => {
+              // 1. FORMAT ANGKA UTAMA (PARENT) -> Jumlah Record (cth: 178)
+              const mainCount = Number(stat.total_assets).toLocaleString("id-ID");
 
-                <p className="text-6xl font-black text-white mb-2 tracking-tighter">
-                  {stat.total_assets}
-                </p>
-                <h4 className="text-xl font-bold text-emerald-400 mb-8 uppercase tracking-wide">
-                  {stat.category}
-                </h4>
+              return (
+                  <motion.div
+                      key={i}
+                      whileHover={{ y: -10 }}
+                      className="bg-white/5 border border-white/10 p-10 rounded-[2.5rem] backdrop-blur-xl relative overflow-hidden group transition-all hover:bg-white/10 flex flex-col justify-between"
+                  >
 
-                <div className="space-y-4">
-                  {stat.sub_categories?.slice(0, 3).map((sub, idx) => (
-                    <div
-                      key={idx}
-                      className="flex justify-between items-center py-3 border-b border-white/5"
-                    >
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-300">
-                          {sub.name}
-                        </span>
-                        <span className="text-[10px] uppercase text-slate-500 tracking-wider font-black">
-                          {sub.layers_count} layers
-                        </span>
-                      </div>
-                      <span className="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-lg text-xs font-black">
-                        {sub.total_assets}
-                      </span>
+                  {/* Background Icon Decoration */}
+                  <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <BarChart3 className="w-24 h-24 text-emerald-500" />
+                  </div>
+
+                  {/* MAIN STATS (Upper Part) */}
+                  <div>
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <p className="text-6xl font-black text-white tracking-tighter">
+                        {mainCount}
+                      </p>
+                      <span className="text-sm font-bold text-slate-500 uppercase tracking-widest">Aset</span>
                     </div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
+                    <h4 className="text-xl font-bold text-emerald-400 mb-8 uppercase tracking-wide">
+                      {stat.category}
+                    </h4>
+                  </div>
+
+                  {/* SUB CATEGORIES (Lower Part) */}
+                  <div className="space-y-4">
+                    {stat.sub_categories?.slice(0, 3).map((sub, idx) => {
+                      // Cek apakah satuannya panjang (butuh desimal) atau unit (bulat)
+                      const isLength = ['kilometer', 'meter', 'km', 'm'].includes(sub.unit?.toLowerCase());
+
+                      // Gunakan 'unit_counts' agar yang muncul adalah KM atau Unit Value
+                      const subValue = Number(sub.unit_counts).toLocaleString("id-ID", {
+                        maximumFractionDigits: isLength ? 2 : 0,
+                      });
+
+                        return (
+                            <div
+                                key={idx}
+                                className="flex justify-between items-center py-3 border-b border-white/5 group/item"
+                            >
+                              <div className="flex flex-col">
+                                <span className="text-sm font-bold text-slate-300 group-hover/item:text-white transition-colors">
+                                  {sub.name}
+                                </span>
+
+                                {/* Tampilkan jumlah Layer & Record sebagai info tambahan kecil */}
+                                <span className="text-[10px] uppercase text-slate-500 tracking-wider font-black">{sub.layers_count} Layer • {sub.total_assets} Aset</span>
+                              </div>
+
+                              {/* Badge Nilai Utama (KM/Unit) */}
+                              <span className="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-lg text-xs font-black whitespace-nowrap">{subValue} <span className="text-[10px] uppercase opacity-70 ml-0.5">{sub.unit}</span></span>
+                            </div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
