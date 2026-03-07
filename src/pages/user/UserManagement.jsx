@@ -221,12 +221,12 @@ const UserManagement = () => {
       {/* ================= HEADER AREA ================= */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="p-3.5 rounded-[1.2rem] bg-emerald-600 shadow-lg shadow-emerald-200 text-white">
+          <div className="p-3.5 rounded-[1.2rem] bg-yellow-600 shadow-lg shadow-yellow-200 text-white">
             <Users className="w-6 h-6" />
           </div>
           <div>
             <h1 className="text-3xl font-black text-slate-800 tracking-tight leading-none">
-              Manajemen <span className="text-emerald-600">Pengguna</span>
+              Manajemen <span className="text-yellow-600">Pengguna</span>
             </h1>
             <p className="text-slate-500 text-sm font-medium mt-1.5">
               Otorisasi akses dan manajemen akun personil sistem secara
@@ -237,7 +237,7 @@ const UserManagement = () => {
 
         <button
           onClick={() => setOpenCreate(true)}
-          className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-xl shadow-slate-200 active:scale-95"
+          className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-yellow-600 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-xl shadow-slate-200 active:scale-95"
         >
           <Plus className="w-4 h-4" />
           Tambah Pengguna
@@ -249,9 +249,9 @@ const UserManagement = () => {
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search Input */}
           <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-yellow-500 transition-colors" />
             <input
-              className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl pl-11 pr-4 py-3 text-sm font-bold text-slate-700 outline-none transition-all placeholder:font-medium placeholder:text-slate-400"
+              className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl pl-11 pr-4 py-3 text-sm font-bold text-slate-700 outline-none transition-all placeholder:font-medium placeholder:text-slate-400"
               placeholder="Cari berdasarkan nama, username, atau email..."
               value={search}
               onChange={(e) => {
@@ -265,7 +265,7 @@ const UserManagement = () => {
           <div className="relative min-w-[200px]">
             <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
             <select
-              className="w-full appearance-none bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl pl-10 pr-10 py-3 text-sm font-bold text-slate-700 outline-none transition-all cursor-pointer"
+              className="w-full appearance-none bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl pl-10 pr-10 py-3 text-sm font-bold text-slate-700 outline-none transition-all cursor-pointer"
               value={role}
               onChange={(e) => {
                 setRole(e.target.value);
@@ -312,7 +312,7 @@ const UserManagement = () => {
                 users.map((user, index) => (
                   <tr
                     key={user.id}
-                    className="group hover:bg-emerald-50/30 transition-colors"
+                    className="group hover:bg-yellow-50/30 transition-colors"
                   >
                     <td className="px-6 py-4">
                       <span className="text-xs font-mono font-bold text-slate-400">
@@ -323,7 +323,7 @@ const UserManagement = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm border-2 border-white shadow-sm">
+                        <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-700 font-bold text-sm border-2 border-white shadow-sm">
                           {user.fullName?.charAt(0)}
                         </div>
                         <div>
@@ -348,7 +348,7 @@ const UserManagement = () => {
                       <span
                         className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg shadow-sm border ${
                           user.role?.name === "Admin"
-                            ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                            ? "bg-yellow-100 text-yellow-700 border-yellow-200"
                             : "bg-blue-100 text-blue-700 border-blue-200"
                         }`}
                       >
@@ -406,7 +406,7 @@ const UserManagement = () => {
               </h3>
               <p className="text-sm text-slate-500 font-medium mt-2 mb-6 leading-relaxed">
                 Keamanan akun adalah prioritas. Pastikan pengguna{" "}
-                <span className="text-slate-900 font-bold uppercase underline decoration-emerald-500">
+                <span className="text-slate-900 font-bold uppercase underline decoration-yellow-500">
                   {selectedUser.fullName}
                 </span>{" "}
                 menerima informasi password baru melalui kanal yang aman.
@@ -512,7 +512,7 @@ const UserManagement = () => {
                       value={createForm.username}
                       onChange={handleCreateChange}
                       placeholder="johndoe"
-                      className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
+                      className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
                     />
                   </div>
                   <div className="space-y-1">
@@ -524,7 +524,7 @@ const UserManagement = () => {
                       value={createForm.fullName}
                       onChange={handleCreateChange}
                       placeholder="John Doe"
-                      className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
+                      className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -538,7 +538,7 @@ const UserManagement = () => {
                     value={createForm.email}
                     onChange={handleCreateChange}
                     placeholder="john@example.com"
-                    className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
+                    className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -551,7 +551,7 @@ const UserManagement = () => {
                     value={createForm.password}
                     onChange={handleCreateChange}
                     placeholder="••••••••"
-                    className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
+                    className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
                   />
                 </div>
                 <div className="flex gap-3 pt-4">
@@ -565,7 +565,7 @@ const UserManagement = () => {
                   <button
                     type="submit"
                     disabled={createUserMutation.isLoading}
-                    className="flex-2 px-8 py-3 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 transition-all shadow-lg active:scale-95"
+                    className="flex-2 px-8 py-3 bg-yellow-600 text-white rounded-xl text-sm font-bold hover:bg-yellow-700 transition-all shadow-lg active:scale-95"
                   >
                     {createUserMutation.isLoading
                       ? "Menyimpan..."

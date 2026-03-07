@@ -31,7 +31,7 @@ const Navbar = () => {
         {/* LOGO SECTION */}
         <Link to="/" className="flex items-center space-x-3 group">
           <div className="relative">
-            <div className="absolute inset-0 bg-emerald-500 blur-lg opacity-0 group-hover:opacity-40 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-yellow-500 blur-lg opacity-0 group-hover:opacity-40 transition-opacity duration-500" />
             <img
               src="https://iconlogovector.com/uploads/images/2023/05/lg-9cee3ca8e0a838a8e72da83c54f6e5fc56.jpg"
               alt="Logo"
@@ -46,7 +46,7 @@ const Navbar = () => {
                   : "text-white md:text-white sm:text-slate-900"
               }`}
             >
-              DATABASE <span className="text-emerald-500">ASET</span>
+              DATABASE <span className="text-yellow-500">INFRASTRUKTUR</span>
             </h1>
             <p
               className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-colors duration-300 ${
@@ -66,14 +66,14 @@ const Navbar = () => {
               to={link.path}
               className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 relative group ${
                 scrolled
-                  ? "text-slate-600 hover:text-emerald-600"
+                  ? "text-slate-600 hover:text-yellow-600"
                   : "text-white/80 hover:text-white"
               }`}
             >
               {link.name}
               {/* Underline Indicator */}
               <span
-                className={`absolute bottom-0 left-4 right-4 h-0.5 bg-emerald-500 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100 ${
+                className={`absolute bottom-0 left-4 right-4 h-0.5 bg-yellow-500 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100 ${
                   location.pathname === link.path ? "scale-x-100" : ""
                 }`}
               />
@@ -86,8 +86,8 @@ const Navbar = () => {
             to="/login"
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 ${
               scrolled
-                ? "bg-slate-900 text-white hover:bg-emerald-600 shadow-lg shadow-slate-900/10"
-                : "bg-white text-slate-900 hover:bg-emerald-500 hover:text-white shadow-xl"
+                ? "bg-slate-900 text-white hover:bg-yellow-600 shadow-lg shadow-slate-900/10"
+                : "bg-white text-slate-900 hover:bg-yellow-500 hover:text-white shadow-xl"
             }`}
           >
             Masuk
@@ -122,7 +122,7 @@ const Navbar = () => {
                 <Link
                   key={link.name}
                   to={link.path}
-                  className="px-4 py-4 rounded-2xl text-sm font-black text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition-all flex justify-between items-center group"
+                  className="px-4 py-4 rounded-2xl text-sm font-black text-slate-600 hover:bg-yellow-50 hover:text-yellow-600 transition-all flex justify-between items-center group"
                   onClick={() => setOpen(false)}
                 >
                   {link.name}

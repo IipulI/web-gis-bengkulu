@@ -15,7 +15,6 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { authService } from "../../services/authService";
 import { setUserData } from "../../store/userSlice";
-import type { RootState } from "../../store/store";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -59,39 +58,41 @@ export default function Login() {
   }, [token, navigate]);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 relative overflow-hidden font-sans">
       {/* --- BACKGROUND DECORATION --- */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[120px]" />
+      {/* Background disesuaikan menjadi Navy dengan pancaran Amber */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-amber-500/10 rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-slate-800/20 rounded-full blur-[120px]" />
 
       <div className="w-full max-w-[440px] z-10">
         {/* TOMBOL KEMBALI */}
         <button
           onClick={() => navigate("/")}
-          className="group mb-8 flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-all duration-300 font-bold text-sm"
+          className="group mb-8 flex items-center gap-2 text-slate-400 hover:text-amber-500 transition-all duration-300 font-bold text-sm"
         >
-          <div className="p-2 rounded-lg group-hover:bg-emerald-50 transition-colors">
+          <div className="p-2 rounded-lg group-hover:bg-amber-500/10 transition-colors">
             <ArrowLeft size={18} />
           </div>
           Kembali ke Beranda
         </button>
 
         {/* KARTU LOGIN */}
-        <div className="bg-white/80 backdrop-blur-2xl border border-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] p-10 relative">
+        <div className="bg-slate-900/80 backdrop-blur-2xl border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)] rounded-[2.5rem] p-10 relative">
           {/* HEADER SECTION */}
           <div className="flex flex-col items-center mb-10">
             <div className="relative mb-6 group">
-              <div className="absolute inset-0 bg-emerald-500 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity animate-pulse" />
+              {/* Glow Amber pada Logo */}
+              <div className="absolute inset-0 bg-amber-500 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity animate-pulse" />
               <img
                 src="https://iconlogovector.com/uploads/images/2023/05/lg-9cee3ca8e0a838a8e72da83c54f6e5fc56.jpg"
                 alt="Logo"
                 className="w-20 h-20 object-contain relative drop-shadow-2xl transition-transform group-hover:scale-110 duration-500"
               />
             </div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight text-center leading-tight uppercase">
-              Database <span className="text-emerald-600">Aset</span>
+            <h2 className="text-2xl font-black text-white tracking-tight text-center leading-tight uppercase">
+              Database <span className="text-amber-500">Aset</span>
             </h2>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-2">
               Pemerintah Kota Bengkulu
             </p>
           </div>
@@ -100,11 +101,11 @@ export default function Login() {
           <form onSubmit={handleLogin} className="space-y-6">
             {/* USERNAME */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-wider">
+              <label className="text-xs font-bold text-slate-400 ml-1 uppercase tracking-wider">
                 Username
               </label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-amber-500 transition-colors">
                   <Mail size={18} />
                 </div>
                 <input
@@ -113,7 +114,7 @@ export default function Login() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Masukkan username"
-                  className="w-full pl-12 pr-4 py-4 bg-slate-100/50 border border-transparent focus:bg-white focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 rounded-2xl text-sm font-semibold transition-all outline-none placeholder:text-slate-300"
+                  className="w-full pl-12 pr-4 py-4 bg-slate-950/50 border border-white/5 focus:bg-slate-950 focus:border-amber-500/50 focus:ring-4 focus:ring-amber-500/10 rounded-2xl text-sm font-semibold text-white transition-all outline-none placeholder:text-slate-600"
                 />
               </div>
             </div>
@@ -121,18 +122,18 @@ export default function Login() {
             {/* PASSWORD */}
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                   Kata Sandi
                 </label>
                 <a
                   href="#"
-                  className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
+                  className="text-[11px] font-bold text-amber-500 hover:text-amber-400 transition-colors"
                 >
                   Lupa Password?
                 </a>
               </div>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-amber-500 transition-colors">
                   <Lock size={18} />
                 </div>
                 <input
@@ -141,14 +142,14 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-12 pr-12 py-4 bg-slate-100/50 border border-transparent focus:bg-white focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 rounded-2xl text-sm font-semibold transition-all outline-none placeholder:text-slate-300"
+                  className="w-full pl-12 pr-12 py-4 bg-slate-950/50 border border-white/5 focus:bg-slate-950 focus:border-amber-500/50 focus:ring-4 focus:ring-amber-500/10 rounded-2xl text-sm font-semibold text-white transition-all outline-none placeholder:text-slate-600"
                 />
 
                 {/* TOMBOL SHOW/HIDE */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 hover:bg-slate-200/50 rounded-lg transition-all"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-1.5 hover:bg-white/5 rounded-lg transition-all"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -160,7 +161,7 @@ export default function Login() {
               <input
                 type="checkbox"
                 id="remember"
-                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer accent-emerald-500"
+                className="w-4 h-4 rounded border-white/10 bg-slate-950 text-amber-500 focus:ring-amber-500 cursor-pointer accent-amber-500"
               />
               <label
                 htmlFor="remember"
@@ -174,7 +175,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loginMutation.isPending}
-              className="w-full bg-slate-900 hover:bg-emerald-600 text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-slate-900/10 hover:shadow-emerald-500/20 transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group"
+              className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-amber-900/20 hover:shadow-amber-500/20 transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group"
             >
               {loginMutation.isPending ? (
                 <>
@@ -192,12 +193,12 @@ export default function Login() {
           </form>
 
           {/* FOOTER SECTION */}
-          <div className="mt-10 pt-8 border-t border-slate-100 flex flex-col items-center gap-1">
-            <p className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.1em] text-center">
+          <div className="mt-10 pt-8 border-t border-white/5 flex flex-col items-center gap-1">
+            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.1em] text-center">
               Sistem Informasi Geografis Aset
             </p>
-            <p className="text-[10px] font-bold text-slate-400">
-              &copy; 2025 Pemerintah Kota Bengkulu
+            <p className="text-[10px] font-bold text-slate-500">
+              &copy; 2026 Pemerintah Kota Bengkulu
             </p>
           </div>
         </div>

@@ -20,19 +20,19 @@ const Help = () => {
     <DashboardLayout>
       <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-12">
         {/* ================= HERO SECTION ================= */}
-        <div className="relative overflow-hidden bg-slate-900 rounded-[2.5rem] p-8 md:p-16 shadow-2xl shadow-emerald-900/20">
+        <div className="relative overflow-hidden bg-slate-900 rounded-[2.5rem] p-8 md:p-16 shadow-2xl shadow-yellow-900/20">
           {/* Decorative Background Elements */}
-          <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px]" />
+          <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-64 h-64 bg-yellow-500/20 rounded-full blur-[80px]" />
           <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px]" />
 
           <div className="relative z-10 flex flex-col items-center text-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-bold uppercase tracking-widest">
               <ShieldQuestion size={14} />
               Support System
             </div>
             <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight leading-[1.1]">
               Ada yang bisa{" "}
-              <span className="text-emerald-500 italic">kami bantu?</span>
+              <span className="text-yellow-500 italic">kami bantu?</span>
             </h1>
             <p className="text-slate-400 text-lg max-w-2xl leading-relaxed">
               Pusat informasi komprehensif untuk operasional Web GIS Database
@@ -50,7 +50,7 @@ const Help = () => {
               title: "Panduan Pengguna",
               desc: "Pelajari instruksi langkah demi langkah pengoperasian modul aset.",
               icon: LifeBuoy,
-              color: "emerald",
+              color: "yellow",
               cta: "Buka Dokumentasi",
             },
             {
@@ -94,19 +94,19 @@ const Help = () => {
 
               <div className="flex items-center gap-2 text-slate-900 font-bold text-sm uppercase tracking-wider group-hover:gap-4 transition-all">
                 {item.cta}
-                <ArrowRightCircle size={18} className="text-emerald-500" />
+                <ArrowRightCircle size={18} className="text-yellow-500" />
               </div>
             </div>
           ))}
         </div>
 
         {/* ================= CONTACT & SUPPORT ================= */}
-        <div className="bg-emerald-600 rounded-[2.5rem] p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-10 shadow-xl shadow-emerald-200">
+        <div className="bg-yellow-600 rounded-[2.5rem] p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-10 shadow-xl shadow-yellow-200">
           <div className="space-y-4 text-center md:text-left">
             <h2 className="text-3xl font-black leading-tight">
               Masih butuh bantuan spesifik?
             </h2>
-            <p className="text-emerald-100 opacity-90 max-w-md font-medium">
+            <p className="text-yellow-100 opacity-90 max-w-md font-medium">
               Tim teknis DPUPR Kota Bengkulu siap membantu Anda mengatasi
               masalah sistem dan data.
             </p>
@@ -117,11 +117,11 @@ const Help = () => {
               href="tel:07363877"
               className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all group"
             >
-              <div className="p-3 bg-white rounded-xl text-emerald-600 group-hover:rotate-12 transition-transform">
+              <div className="p-3 bg-white rounded-xl text-yellow-600 group-hover:rotate-12 transition-transform">
                 <Phone size={24} />
               </div>
               <div>
-                <p className="text-xs font-bold text-emerald-200 uppercase tracking-widest">
+                <p className="text-xs font-bold text-yellow-200 uppercase tracking-widest">
                   Hotline
                 </p>
                 <p className="text-lg font-black">0736 3877</p>
@@ -132,11 +132,11 @@ const Help = () => {
               href="mailto:dpupr.bengkulukota@gmail.com"
               className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all group"
             >
-              <div className="p-3 bg-white rounded-xl text-emerald-600 group-hover:-rotate-12 transition-transform">
+              <div className="p-3 bg-white rounded-xl text-yellow-600 group-hover:-rotate-12 transition-transform">
                 <Mail size={24} />
               </div>
               <div>
-                <p className="text-xs font-bold text-emerald-200 uppercase tracking-widest">
+                <p className="text-xs font-bold text-yellow-200 uppercase tracking-widest">
                   Email Resmi
                 </p>
                 <p className="text-sm font-black truncate w-40 md:w-auto">
@@ -182,7 +182,7 @@ const Help = () => {
 
               <div className="grid gap-4">
                 <h3 className="text-lg font-black text-slate-800 flex items-center gap-2">
-                  <Search size={20} className="text-emerald-500" />
+                  <Search size={20} className="text-yellow-500" />
                   Knowledge Base (FAQ)
                 </h3>
 
@@ -202,7 +202,7 @@ const Help = () => {
                 ].map((faq, i) => (
                   <details
                     key={i}
-                    className="group bg-slate-50 border border-slate-200 rounded-2xl p-4 hover:border-emerald-300 transition-colors"
+                    className="group bg-slate-50 border border-slate-200 rounded-2xl p-4 hover:border-yellow-300 transition-colors"
                   >
                     <summary className="list-none cursor-pointer flex items-center justify-between font-bold text-slate-700">
                       {faq.q}

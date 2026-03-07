@@ -9,130 +9,160 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 
+// Ikon TikTok sederhana menggunakan SVG karena Lucide-react versi lama kadang belum menyediakannya
+const TikTokIcon = ({ size = 18 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+  </svg>
+);
+
 const Footer = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  return (
-    <footer className="bg-slate-950 text-slate-300 pt-20 pb-10 relative overflow-hidden">
-      {/* Dekorasi Halus */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
+  const socialLinks = [
+    {
+      icon: <Instagram size={18} />,
+      href: "https://www.instagram.com/dinas_pupr_kotabengkulu?igsh=MWJtdDdxa3V3azNmeA==",
+    },
+    {
+      icon: <Facebook size={18} />,
+      href: "https://www.facebook.com/share/1aQRSfoCBJ/",
+    },
+    {
+      icon: <Youtube size={18} />,
+      href: "https://youtube.com/@dpuprkotabengkulu7699?si=I1VuOytGGJkf1knh",
+    },
+    {
+      icon: <TikTokIcon size={18} />,
+      href: "https://www.tiktok.com/@dpupr_kota_bengkulu?_r=1&_t=ZS-9413Z6M76Hs",
+    },
+  ];
 
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
+  return (
+    <footer className="bg-blue-950 text-blue-100/70 pt-20 pb-10 relative overflow-hidden">
+      {/* Dekorasi Garis Atas - Gradient Kuning Amber */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-400/50 to-transparent" />
+
+      {/* Dekorasi Cahaya Halus di Pojok */}
+      <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl" />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 mb-20">
           {/* KOLOM 1: BRANDING */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="space-y-8">
+            <div className="flex items-center gap-4">
               <img
                 src="https://iconlogovector.com/uploads/images/2023/05/lg-9cee3ca8e0a838a8e72da83c54f6e5fc56.jpg"
                 alt="Logo Kota Bengkulu"
-                className="w-12 h-12 object-contain brightness-110"
+                className="w-14 h-14 object-contain brightness-125"
               />
               <div>
-                <h4 className="font-black text-white leading-none tracking-tight">
-                  DATABASE <span className="text-emerald-500">ASET</span>
+                <h4 className="font-black text-white leading-none tracking-tight text-lg">
+                  DATABASE{" "}
+                  <span className="text-amber-400 italic">INFRASTRUKTUR</span>
                 </h4>
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+                <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mt-1">
                   Kota Bengkulu
                 </p>
               </div>
             </div>
-            <p className="text-sm leading-relaxed text-slate-400 mb-6">
+
+            <p className="text-sm leading-relaxed text-blue-100/60 border-l-2 border-amber-400/30 pl-4">
               Portal resmi pengelolaan informasi infrastruktur dan aset daerah
-              yang transparan, akuntabel, dan berbasis spasial untuk pembangunan
-              berkelanjutan.
+              Kota Bengkulu. Berbasis data spasial untuk mewujudkan pembangunan
+              yang cerdas dan berkelanjutan.
             </p>
-            <div className="flex gap-4">
-              {[
-                { icon: <Instagram size={18} />, href: "#" },
-                { icon: <Facebook size={18} />, href: "#" },
-                { icon: <Youtube size={18} />, href: "#" },
-              ].map((social, i) => (
+
+            <div className="flex gap-3">
+              {socialLinks.map((social, i) => (
                 <a
                   key={i}
                   href={social.href}
-                  className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all duration-300 border border-white/5"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-amber-400 hover:text-blue-950 transition-all duration-500 border border-white/10 group"
                 >
-                  {social.icon}
+                  <span className="group-hover:scale-110 transition-transform">
+                    {social.icon}
+                  </span>
                 </a>
               ))}
             </div>
           </div>
 
-          {/* KOLOM 2: QUICK LINKS */}
-          {/* <div>
-            <h4 className="text-sm font-black text-white uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full" />
-              Tautan Cepat
-            </h4>
-            <ul className="space-y-4">
-              {[
-                "Beranda",
-                "Peta Interaktif",
-                "Statistik Aset",
-                "Produk Hukum",
-                "Panduan Pengguna",
-              ].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-sm hover:text-emerald-400 flex items-center group transition-colors"
-                  >
-                    <ArrowUpRight
-                      size={14}
-                      className="mr-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
-                    />
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div> */}
-
-          {/* KOLOM 3: CONTACT INFO */}
-          <div>
-            <h4 className="text-sm font-black text-white uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+          {/* KOLOM 2: CONTACT INFO */}
+          <div className="space-y-8">
+            <h4 className="text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-3">
+              <span className="w-8 h-px bg-amber-400" />
               Kontak Kami
             </h4>
             <div className="space-y-6">
-              <div className="flex gap-4">
-                <div className="mt-1 text-emerald-500">
-                  <MapPin size={18} />
+              <div className="flex gap-5 group">
+                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-900 flex items-center justify-center text-amber-400 group-hover:bg-amber-400 group-hover:text-blue-900 transition-colors">
+                  <MapPin size={20} />
                 </div>
                 <p className="text-sm leading-relaxed">
                   Jl. Soeprapto Dalam, Betungan,
-                  <br /> Kec. Selebar, Kota Bengkulu
+                  <br />{" "}
+                  <span className="text-white font-medium">
+                    Kec. Selebar, Kota Bengkulu
+                  </span>
                 </p>
               </div>
-              <div className="flex gap-4">
-                <div className="text-emerald-500">
-                  <Mail size={18} />
+              <div className="flex gap-5 group">
+                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-900 flex items-center justify-center text-amber-400 group-hover:bg-amber-400 group-hover:text-blue-900 transition-colors">
+                  <Mail size={20} />
                 </div>
-                <p className="text-sm">dpupr.bengkulukota@gmail.com</p>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-blue-400 mb-1">
+                    Email Resmi
+                  </p>
+                  <p className="text-sm text-white font-medium">
+                    dpupr.bengkulukota@gmail.com
+                  </p>
+                </div>
               </div>
-              <div className="flex gap-4">
-                <div className="text-emerald-500">
-                  <Phone size={18} />
+              <div className="flex gap-5 group">
+                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-900 flex items-center justify-center text-amber-400 group-hover:bg-amber-400 group-hover:text-blue-900 transition-colors">
+                  <Phone size={20} />
                 </div>
-                <p className="text-sm">0736 3877</p>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-blue-400 mb-1">
+                    Layanan Telepon
+                  </p>
+                  <p className="text-sm text-white font-medium">0736 3877</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* KOLOM 4: BADGE/WIDGET */}
-          <div>
-            <h4 className="text-sm font-black text-white uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full" />
-              Layanan Terkait
+          {/* KOLOM 3: SUPPORT BOX */}
+          <div className="space-y-8">
+            <h4 className="text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-3">
+              <span className="w-8 h-px bg-amber-400" />
+              Layanan Publik
             </h4>
-            <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-600/10 to-blue-600/10 border border-white/5">
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
+            <div className="relative p-8 rounded-[2rem] bg-gradient-to-br from-blue-900/50 to-blue-800/30 border border-white/10 overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-150 transition-transform duration-700">
+                <Globe size={80} className="text-white" />
+              </div>
+
+              <p className="text-sm text-blue-100/70 leading-relaxed mb-8 relative z-10">
                 Butuh bantuan teknis terkait data aset atau ingin melaporkan
-                masalah infrastruktur?
+                masalah infrastruktur di wilayah Anda?
               </p>
-              <button className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+              <button className="w-full py-4 bg-amber-400 hover:bg-amber-300 text-blue-950 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all shadow-lg shadow-amber-900/20 active:scale-95 relative z-10">
                 Hubungi Support
               </button>
             </div>
@@ -140,23 +170,28 @@ const Footer = () => {
         </div>
 
         {/* BOTTOM SECTION */}
-        <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-xs font-medium text-slate-500">
-            © 2026{" "}
-            <span className="text-slate-300">Pemerintah Kota Bengkulu</span>.
-            Dikembangkan oleh DPUPR.
-          </p>
+        <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="text-center md:text-left">
+            <p className="text-xs font-bold text-blue-400/60 uppercase tracking-widest mb-1">
+              © 2026 Pemerintah Kota Bengkulu
+            </p>
+            <p className="text-[10px] text-blue-100/40">
+              Dikembangkan oleh Bidang Bina Marga - DPUPR Kota Bengkulu
+            </p>
+          </div>
 
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-              <Globe size={14} className="text-emerald-500" />
+          <div className="flex items-center gap-10">
+            <div className="hidden lg:flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-blue-400/40">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+              Server Status: Online
             </div>
+
             <button
               onClick={scrollToTop}
-              className="group flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white hover:text-emerald-400 transition-colors"
+              className="group flex items-center gap-4 text-xs font-black uppercase tracking-[0.2em] text-white hover:text-amber-400 transition-all"
             >
               Back To Top
-              <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-emerald-500 transition-colors">
+              <div className="w-12 h-12 rounded-full border-2 border-white/10 flex items-center justify-center group-hover:border-amber-400 group-hover:-translate-y-1 transition-all duration-300">
                 ↑
               </div>
             </button>

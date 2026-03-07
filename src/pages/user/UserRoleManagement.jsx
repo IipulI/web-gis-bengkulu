@@ -157,12 +157,12 @@ const UserRoleManagement = () => {
       {/* ================= HEADER AREA ================= */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="p-3.5 rounded-[1.2rem] bg-emerald-600 shadow-lg shadow-emerald-200 text-white">
+          <div className="p-3.5 rounded-[1.2rem] bg-yellow-600 shadow-lg shadow-yellow-200 text-white">
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
             <h1 className="text-3xl font-black text-slate-800 tracking-tight leading-none">
-              Manajemen <span className="text-emerald-600">Role</span>
+              Manajemen <span className="text-yellow-600">Role</span>
             </h1>
             <p className="text-slate-500 text-sm font-medium mt-1.5">
               Definisikan struktur jabatan dan kendali akses fitur aplikasi.
@@ -172,7 +172,7 @@ const UserRoleManagement = () => {
 
         <button
           onClick={() => setOpenCreate(true)}
-          className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-xl shadow-slate-200 active:scale-95"
+          className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-yellow-600 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-xl shadow-slate-200 active:scale-95"
         >
           <Plus className="w-4 h-4" />
           Tambah Role Baru
@@ -182,9 +182,9 @@ const UserRoleManagement = () => {
       {/* ================= FILTER TOOLBAR ================= */}
       <div className="bg-white border border-slate-100 rounded-[2rem] p-5 shadow-sm mb-8">
         <div className="relative group max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-yellow-500 transition-colors" />
           <input
-            className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl pl-11 pr-4 py-3 text-sm font-bold text-slate-700 outline-none transition-all placeholder:font-medium placeholder:text-slate-400"
+            className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl pl-11 pr-4 py-3 text-sm font-bold text-slate-700 outline-none transition-all placeholder:font-medium placeholder:text-slate-400"
             placeholder="Cari nama role..."
             value={search}
             onChange={(e) => {
@@ -219,7 +219,7 @@ const UserRoleManagement = () => {
               {roles?.map((role, index) => (
                 <tr
                   key={role.id}
-                  className="group hover:bg-emerald-50/30 transition-colors"
+                  className="group hover:bg-yellow-50/30 transition-colors"
                 >
                   <td className="px-6 py-4">
                     <span className="text-xs font-mono font-bold text-slate-400">
@@ -230,7 +230,7 @@ const UserRoleManagement = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100 font-bold text-xs">
+                      <div className="w-8 h-8 rounded-lg bg-yellow-50 flex items-center justify-center text-yellow-600 border border-yellow-100 font-bold text-xs">
                         {role.name.charAt(0)}
                       </div>
                       <span className="text-sm font-bold text-slate-800 uppercase tracking-tight">
@@ -247,7 +247,7 @@ const UserRoleManagement = () => {
                     <div className="flex gap-2 justify-center">
                       <button
                         onClick={() => openPermissionModal(role)}
-                        className="p-2.5 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-emerald-600 hover:border-emerald-200 hover:shadow-lg hover:shadow-emerald-50 transition-all active:scale-90"
+                        className="p-2.5 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-yellow-600 hover:border-yellow-200 hover:shadow-lg hover:shadow-yellow-50 transition-all active:scale-90"
                         title="Atur Hak Akses"
                       >
                         <KeySquare className="w-4 h-4" />
@@ -303,19 +303,19 @@ const UserRoleManagement = () => {
                     onClick={() => togglePermission(perm.key)}
                     className={`group cursor-pointer flex items-center justify-between rounded-2xl border-2 p-4 transition-all duration-200 ${
                       active
-                        ? "bg-emerald-50 border-emerald-500 shadow-md shadow-emerald-100"
+                        ? "bg-yellow-50 border-yellow-500 shadow-md shadow-yellow-100"
                         : "bg-white border-slate-100 hover:border-slate-300"
                     }`}
                   >
                     <div className="flex gap-3 items-center">
                       <div
-                        className={`p-2 rounded-lg ${active ? "bg-emerald-500 text-white" : "bg-slate-100 text-slate-400"}`}
+                        className={`p-2 rounded-lg ${active ? "bg-yellow-500 text-white" : "bg-slate-100 text-slate-400"}`}
                       >
                         <CheckCircle2 className="w-4 h-4" />
                       </div>
                       <div>
                         <p
-                          className={`text-sm font-black ${active ? "text-emerald-900" : "text-slate-700"}`}
+                          className={`text-sm font-black ${active ? "text-yellow-900" : "text-slate-700"}`}
                         >
                           {perm.label}
                         </p>
@@ -362,7 +362,7 @@ const UserRoleManagement = () => {
                       ? setCreateForm({ ...createForm, name: e.target.value })
                       : setEditForm({ ...editForm, name: e.target.value })
                   }
-                  className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
+                  className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
                   placeholder="Contoh: EDITOR_KONTEN"
                 />
               </div>
@@ -386,7 +386,7 @@ const UserRoleManagement = () => {
                           description: e.target.value,
                         })
                   }
-                  className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
+                  className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
                   placeholder="Jelaskan otoritas role ini..."
                 />
               </div>
@@ -406,7 +406,7 @@ const UserRoleManagement = () => {
                   disabled={
                     createMutation.isPending || updateMutation.isPending
                   }
-                  className="flex-2 px-8 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-emerald-600 transition-all shadow-lg active:scale-95"
+                  className="flex-2 px-8 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-yellow-600 transition-all shadow-lg active:scale-95"
                 >
                   Simpan Role
                 </button>

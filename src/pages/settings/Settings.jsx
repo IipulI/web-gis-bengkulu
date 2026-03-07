@@ -33,7 +33,7 @@ const Settings = () => {
       <div className="flex items-center gap-4 mb-8">
         <button
           onClick={goBack}
-          className="p-3 rounded-2xl bg-white border border-slate-100 text-slate-400 hover:text-emerald-600 hover:border-emerald-100 hover:shadow-lg hover:shadow-emerald-50 transition-all active:scale-90"
+          className="p-3 rounded-2xl bg-white border border-slate-100 text-slate-400 hover:text-yellow-600 hover:border-yellow-100 hover:shadow-lg hover:shadow-yellow-50 transition-all active:scale-90"
         >
           <ArrowLeft size={20} />
         </button>
@@ -60,7 +60,7 @@ const Settings = () => {
             subtitle="Kelola informasi identitas dan data personal Anda."
           >
             <div className="flex flex-col items-center mb-8">
-              <div className="w-24 h-24 rounded-full bg-emerald-50 border-4 border-emerald-100 flex items-center justify-center text-emerald-600 mb-4 shadow-inner">
+              <div className="w-24 h-24 rounded-full bg-yellow-50 border-4 border-yellow-100 flex items-center justify-center text-yellow-600 mb-4 shadow-inner">
                 <UserCircle size={48} />
               </div>
               <h3 className="font-bold text-slate-800">Admin Bengkulu</h3>
@@ -87,7 +87,7 @@ const Settings = () => {
                 <input
                   type="password"
                   placeholder="••••••••"
-                  className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none transition-all"
+                  className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none transition-all"
                 />
               </div>
               <div className="grid md:grid-cols-2 gap-4">
@@ -98,7 +98,7 @@ const Settings = () => {
                   <input
                     type="password"
                     placeholder="••••••••"
-                    className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none transition-all"
+                    className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -108,11 +108,11 @@ const Settings = () => {
                   <input
                     type="password"
                     placeholder="••••••••"
-                    className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none transition-all"
+                    className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-yellow-500 rounded-2xl px-5 py-3.5 text-sm font-bold outline-none transition-all"
                   />
                 </div>
               </div>
-              <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-xl shadow-slate-200 active:scale-[0.98] mt-4 uppercase tracking-widest">
+              <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-sm hover:bg-yellow-600 transition-all shadow-xl shadow-slate-200 active:scale-[0.98] mt-4 uppercase tracking-widest">
                 Simpan Perubahan
               </button>
             </form>
@@ -123,17 +123,17 @@ const Settings = () => {
         return (
           <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in zoom-in-95 duration-500">
             {/* Header Header */}
-            <div className="relative overflow-hidden bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white shadow-2xl shadow-emerald-900/20">
-              <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px]" />
+            <div className="relative overflow-hidden bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white shadow-2xl shadow-yellow-900/20">
+              <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-64 h-64 bg-yellow-500/20 rounded-full blur-[80px]" />
               <div className="relative z-10 flex items-center gap-6">
-                <div className="p-4 bg-emerald-500 rounded-[1.5rem] shadow-lg shadow-emerald-500/40">
+                <div className="p-4 bg-yellow-500 rounded-[1.5rem] shadow-lg shadow-yellow-500/40">
                   <SettingsIcon className="w-8 h-8 text-white animate-[spin_4s_linear_infinite]" />
                 </div>
                 <div>
                   <h1 className="text-3xl font-black tracking-tight leading-none">
                     Pengaturan
                   </h1>
-                  <p className="text-emerald-100/60 mt-2 text-sm font-medium">
+                  <p className="text-yellow-100/60 mt-2 text-sm font-medium">
                     Konfigurasi akun dan preferensi sistem Anda
                   </p>
                 </div>
@@ -151,7 +151,7 @@ const Settings = () => {
                     icon={User}
                     title="Profil Pengguna"
                     desc="Ubah nama, email, dan biodata Anda"
-                    color="emerald"
+                    color="yellow"
                     onClick={() => setActivePage("profile")}
                   />
                   <SettingsItem
@@ -228,13 +228,13 @@ const SettingsItem = ({ icon: Icon, title, desc, color, onClick }) => (
         <Icon size={22} />
       </div>
       <div className="text-left">
-        <p className="font-bold text-slate-800 group-hover:text-emerald-700 transition-colors leading-none">
+        <p className="font-bold text-slate-800 group-hover:text-yellow-700 transition-colors leading-none">
           {title}
         </p>
         <p className="text-xs text-slate-400 mt-1.5 font-medium">{desc}</p>
       </div>
     </div>
-    <div className="p-2 rounded-xl bg-slate-50 text-slate-300 group-hover:bg-emerald-100 group-hover:text-emerald-600 transition-all">
+    <div className="p-2 rounded-xl bg-slate-50 text-slate-300 group-hover:bg-yellow-100 group-hover:text-yellow-600 transition-all">
       <ChevronRight size={18} />
     </div>
   </button>

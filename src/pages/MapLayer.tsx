@@ -26,6 +26,8 @@ import {
   Edit3,
   ArrowRight,
   CheckCircle2,
+  Layers,
+  ArrowLeft,
 } from "lucide-react";
 
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -260,175 +262,204 @@ const MapLayer: React.FC = () => {
 
   const LayerManager = () => {
     return (
-      <aside className="col-span-12 lg:col-span-3 flex flex-col h-[calc(100vh-2rem)] sticky top-4">
-        <div className="flex flex-col h-full bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-[2rem] shadow-xl shadow-slate-200/40 overflow-hidden">
-          {/* HEADER SECTION */}
-          <div className="p-6 pb-4">
-            <div className="flex items-center justify-between mb-2">
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-                  Layer Manager
-                </h2>
-                <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
-                  Control Center
-                </p>
+      <aside className="col-span-12 lg:col-span-3 h-[calc(100vh-2rem)] sticky top-4">
+        <div className="flex flex-col h-full bg-white/90 backdrop-blur-xl border border-slate-200/80 rounded-[24px] shadow-2xl shadow-slate-200/50 overflow-hidden">
+          {/* --- HEADER SECTION --- */}
+          <div className="flex-none p-5 border-b border-slate-100 bg-white/50">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
+                  <Layers className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900 leading-tight">
+                    Layer Manager
+                  </h2>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {layerList.length} Dataset Tersedia
+                  </p>
+                </div>
               </div>
+              {/* Tombol Close/Back jika di Mobile */}
               <button
                 onClick={() => navigate("/dashboard")}
-                className="p-2.5 rounded-xl bg-slate-100 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all duration-300 group"
+                className="lg:hidden p-2 rounded-full hover:bg-slate-100 text-slate-400"
               >
-                <XCircle className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* SEARCH BAR MODERN */}
-            <div className="relative group mt-4">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+            {/* Search Bar */}
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
               </div>
               <input
                 type="text"
-                placeholder="Cari dataset peta..."
+                placeholder="Cari layer..."
                 value={queryFilter}
                 onChange={(e) => setQueryFilter(e.target.value)}
-                className="block w-full pl-10 pr-12 py-3 bg-slate-100/50 border border-transparent focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 rounded-2xl text-sm transition-all outline-none placeholder:text-slate-400"
+                className="block w-full pl-10 pr-9 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 rounded-xl text-sm transition-all outline-none placeholder:text-slate-400 font-medium"
               />
               {queryFilter && (
                 <button
                   onClick={() => setQueryFilter("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
                 >
-                  Clear
+                  <X className="w-3 h-3" />
                 </button>
               )}
             </div>
           </div>
 
-          {/* LAYER LIST SECTION */}
-          <div className="flex-1 overflow-y-auto px-4 custom-scrollbar">
-            <div className="space-y-3 pb-4">
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center py-10 opacity-50">
-                  <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-3" />
-                  <p className="text-sm font-medium text-slate-500">
-                    Sinkronisasi data...
-                  </p>
+          {/* --- SCROLLABLE LIST SECTION --- */}
+          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2 custom-scrollbar">
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+                <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-2" />
+                <span className="text-xs font-medium">Memuat data...</span>
+              </div>
+            ) : filteredList.length === 0 ? (
+              <div className="text-center py-12 px-4">
+                <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300">
+                  <Filter className="w-6 h-6" />
                 </div>
-              ) : (
-                (filteredList || []).map((layer: Layer) => (
+                <p className="text-sm text-slate-500 font-medium">
+                  Tidak ada layer ditemukan.
+                </p>
+              </div>
+            ) : (
+              filteredList.map((layer) => {
+                const isActive = activeLayers[layer.id];
+
+                return (
                   <div
                     key={layer.id}
-                    className="group relative bg-white border border-slate-100 rounded-2xl p-4 transition-all duration-300 hover:shadow-lg hover:shadow-slate-200/50 hover:border-indigo-100"
+                    className={`group relative flex flex-col p-3 rounded-2xl transition-all duration-200 border ${
+                      isActive
+                        ? "bg-indigo-50/40 border-indigo-100 shadow-sm"
+                        : "bg-white border-transparent hover:border-slate-200 hover:shadow-sm hover:bg-slate-50/50"
+                    }`}
                   >
-                    <div className="flex items-start gap-4">
-                      {/* AVATAR LAYER */}
-                      <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-inner ring-4 ring-slate-50 transition-transform group-hover:scale-110 duration-300"
-                        style={{
-                          background: `linear-gradient(135deg, ${layer.color} 0%, ${layer.color}dd 100%)`,
-                          boxShadow: `0 8px 16px -4px ${layer.color}44`,
-                        }}
+                    <div className="flex items-center gap-3">
+                      {/* Visual Toggle Switch */}
+                      <button
+                        onClick={() => toggleLayer(layer)}
+                        className={`relative flex-none w-10 h-6 rounded-full transition-colors duration-300 ${
+                          isActive
+                            ? "bg-indigo-500"
+                            : "bg-slate-200 hover:bg-slate-300"
+                        }`}
                       >
-                        {layer.name?.slice(0, 2).toUpperCase()}
-                      </div>
+                        <span
+                          className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-300 ${
+                            isActive ? "translate-x-4" : "translate-x-0"
+                          }`}
+                        />
+                      </button>
 
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-slate-800 text-sm truncate group-hover:text-indigo-600 transition-colors">
+                      {/* Layer Info */}
+                      <div className="flex-1 min-w-0 cursor-default">
+                        <h4
+                          className={`text-sm font-bold truncate ${isActive ? "text-indigo-900" : "text-slate-700"}`}
+                        >
                           {layer.name}
                         </h4>
-                        <p className="text-[11px] text-slate-400 font-medium truncate mt-0.5">
-                          {layer.description || "Tanpa deskripsi metadata"}
-                        </p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span
+                            className="w-2 h-2 rounded-full"
+                            style={{
+                              backgroundColor: layer.color || "#cbd5e1",
+                            }}
+                          />
+                          <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wide truncate">
+                            {layer.geometryType || "SHP"}
+                          </p>
+                        </div>
                       </div>
+
+                      {/* Quick Detail Action */}
+                      <button
+                        onClick={() =>
+                          navigate(`/dashboard/layer/${layer.id}/detail`, {
+                            state: layer.name,
+                          })
+                        }
+                        className="p-2 rounded-lg text-slate-300 hover:text-indigo-600 hover:bg-white transition-all opacity-0 group-hover:opacity-100"
+                        title="Lihat Detail"
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
                     </div>
 
-                    {/* FLOATING ACTION TOOLBAR */}
-                    <div className="mt-4 flex items-center justify-between pt-3 border-t border-slate-50 gap-1">
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => toggleLayer(layer)}
-                          className={`p-2 rounded-lg transition-all duration-200 ${
-                            activeLayers[layer.id]
-                              ? "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100"
-                              : "bg-slate-50 text-slate-400 hover:bg-slate-100"
-                          }`}
-                          title="Toggle Visibility"
-                        >
-                          {activeLayers[layer.id] ? (
-                            <Eye className="w-4 h-4" />
-                          ) : (
-                            <EyeOff className="w-4 h-4" />
-                          )}
-                        </button>
+                    {/* Expanded Actions (Only visible on hover or active) */}
+                    <div
+                      className={`mt-3 pt-2 border-t border-slate-100/50 flex items-center justify-end gap-1 ${isActive ? "flex" : "hidden group-hover:flex"}`}
+                    >
+                      <span className="text-[10px] text-slate-400 mr-auto font-mono opacity-60">
+                        ID: {layer.id.substring(0, 6)}...
+                      </span>
 
-                        <button
-                          onClick={() => handleEdit(layer)}
-                          className="p-2 rounded-lg text-slate-400 hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-200"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => {
-                            setUpdateLayerId(layer.id);
-                            setIsUpdateImportOpen(true);
-                          }}
-                          className="p-2 rounded-lg text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
-                        >
-                          <UploadCloud className="w-4 h-4" />
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            navigate(`/dashboard/layer/${layer.id}/detail`, {
-                              state: layer.name,
-                            })
-                          }
-                          className="p-2 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white transition-all duration-200"
-                        >
-                          <ArrowRight className="w-4 h-4" />
-                        </button>
-                      </div>
+                      <ActionBtn
+                        icon={<Edit3 className="w-3.5 h-3.5" />}
+                        onClick={() => handleEdit(layer)}
+                        label="Edit Metadata"
+                      />
+                      <ActionBtn
+                        icon={<UploadCloud className="w-3.5 h-3.5" />}
+                        onClick={() => {
+                          setUpdateLayerId(layer.id);
+                          setIsUpdateImportOpen(true);
+                        }}
+                        label="Update File"
+                      />
                     </div>
                   </div>
-                ))
-              )}
-            </div>
+                );
+              })
+            )}
           </div>
 
-          {/* FOOTER ACTION */}
-          <div className="p-6 bg-slate-50/80 border-t border-slate-200/60">
-            <div className="flex items-center justify-between mb-4 px-1">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                {layerList?.length || 0} Total Layer
-              </span>
-              <button
-                onClick={() => refetchLayer()}
-                className="p-1 text-slate-400 hover:text-indigo-600 transition-colors rotate-0 hover:rotate-180 duration-500"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </button>
-            </div>
-
+          {/* --- FOOTER ACTION --- */}
+          <div className="flex-none p-4 bg-white border-t border-slate-100">
             <button
               onClick={() => {
-                const next: Record<string, boolean> = {};
-                (layerList || []).forEach((l: any) => (next[l.id] = true));
-                setActiveLayers(next);
-                // ... logic fetching cache Anda ...
+                const next = {};
+                layerList.forEach((l) => (next[l.id] = true));
+                // Call parent update function here
               }}
-              className="w-full flex items-center justify-center gap-3 py-3.5 bg-slate-900 hover:bg-indigo-600 text-white rounded-2xl font-bold text-sm shadow-lg shadow-slate-900/20 hover:shadow-indigo-500/30 transition-all active:scale-[0.98]"
+              className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 transition-all active:scale-[0.98]"
             >
               <MapIcon className="w-4 h-4" />
-              Tampilkan Semua Layer
+              <span>Tampilkan Semua</span>
             </button>
+
+            <div className="mt-3 flex justify-between items-center px-1">
+              <button
+                onClick={() => refetchLayer()}
+                className="text-[11px] font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+              >
+                Segarkan Data
+              </button>
+              <span className="text-[10px] text-slate-400">
+                Auto-save enabled
+              </span>
+            </div>
           </div>
         </div>
       </aside>
     );
   };
+
+  const ActionBtn = ({ icon, onClick, label }) => (
+    <button
+      onClick={onClick}
+      className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+      title={label}
+    >
+      {icon}
+    </button>
+  );
 
   const handleUpdateImportSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -467,25 +498,36 @@ const MapLayer: React.FC = () => {
             {/* HEADER SECTION */}
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
               <div className="flex items-center gap-5">
-                <div className="h-12 w-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 shadow-inner">
-                  <MapIcon className="w-6 h-6" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                    Peta Pratinjau
-                  </h1>
-                  <p className="text-sm text-slate-500 font-medium mt-0.5">
-                    Monitoring dan manajemen dataset spasial realtime.
-                  </p>
+                {/* TOMBOL KEMBALI */}
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="group flex items-center justify-center h-12 w-12 bg-slate-50 hover:bg-amber-500 rounded-xl border border-slate-200 hover:border-amber-600 transition-all duration-300 shadow-sm hover:shadow-amber-200 active:scale-90"
+                  title="Kembali ke Dashboard"
+                >
+                  <ArrowLeft className="w-6 h-6 text-slate-400 group-hover:text-white transition-colors" />
+                </button>
+
+                <div className="flex items-center gap-5">
+                  <div className="h-12 w-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 shadow-inner">
+                    <MapIcon className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+                      Peta Pratinjau
+                    </h1>
+                    <p className="text-sm text-slate-500 font-medium mt-0.5">
+                      Monitoring dan manajemen dataset spasial realtime.
+                    </p>
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => navigate("/map")}
-                  className="group flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 active:scale-95"
+                  className="group flex items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 active:scale-95 text-slate-700"
                 >
-                  <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+                  <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-amber-600" />
                   Buka Peta Penuh
                 </button>
 
