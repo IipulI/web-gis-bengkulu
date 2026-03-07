@@ -321,7 +321,7 @@ const MapPage = () => {
           {/* Title Badge */}
           <div className="bg-slate-900/80 backdrop-blur-md border border-white/10 px-6 py-2.5 rounded-2xl shadow-xl hidden md:block">
             <h1 className="text-white font-bold text-sm tracking-tight uppercase">
-              Database Aset{" "}
+              Database Infrastruktur{" "}
               <span className="text-amber-500">Kota Bengkulu</span>
             </h1>
           </div>
@@ -357,7 +357,7 @@ const MapPage = () => {
               LIBRARY
             </h2>
             <p className="text-xs text-amber-500 font-bold uppercase tracking-widest">
-              Daftar Layer Aset
+              Daftar Layer Infrastruktur
             </p>
           </div>
           <button
@@ -485,7 +485,7 @@ const MapPage = () => {
                   {selectedPoint.title}
                 </h2>
                 <p className="text-xs font-bold text-amber-500 uppercase tracking-widest">
-                  Informasi Aset
+                  Informasi Infrastruktur
                 </p>
               </div>
             </div>
