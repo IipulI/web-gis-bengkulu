@@ -90,7 +90,7 @@ export default function Login() {
               />
             </div>
             <h2 className="text-2xl font-black text-white tracking-tight text-center leading-tight uppercase">
-              Database <span className="text-amber-500">Aset</span>
+              Database <span className="text-amber-500">Infrastruktur</span>
             </h2>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-2">
               Pemerintah Kota Bengkulu

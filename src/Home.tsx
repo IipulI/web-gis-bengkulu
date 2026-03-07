@@ -27,14 +27,14 @@ const heroSlides = [
     image:
       "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1600",
     title: "Pemetaan Digital Infrastruktur",
-    desc: "Akses cepat data jalan, drainase, dan aset publik dalam satu genggaman.",
+    desc: "Akses cepat data jalan, dan drainase publik dalam satu genggaman.",
   },
   {
     id: 3,
     image:
       "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600",
     title: "Transparansi Data Pembangunan",
-    desc: "Monitoring aset daerah secara visual, akurat, dan dapat dipertanggungjawabkan.",
+    desc: "Monitoring Infrastruktur daerah secara visual, akurat, dan dapat dipertanggungjawabkan.",
   },
 ];
 

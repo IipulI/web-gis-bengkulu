@@ -109,7 +109,7 @@ const Sidebar = () => {
           permission: Permission.LAYER_SCHEMA_VIEW,
         },
         {
-          name: "Laporan Data Aset",
+          name: "Laporan Data Infrastruktur",
           icon: FileText,
           path: "/dashboard/report", // ✅ tambahkan ini
           permission: Permission.REPORT_VIEW,
@@ -165,7 +165,7 @@ const Sidebar = () => {
             />
           </div>
           <span className="font-black text-slate-900 text-xs uppercase tracking-tight">
-            Database Aset
+            Database Infrastruktur
           </span>
         </div>
         <button
@@ -202,7 +202,7 @@ const Sidebar = () => {
           </div>
           <div>
             <h1 className="font-black text-slate-900 text-sm leading-tight tracking-tight uppercase">
-              Database Aset
+              Database Infrastruktur
             </h1>
             <p className="text-[10px] font-bold text-indigo-600 tracking-[0.2em] uppercase">
               Kota Bengkulu
