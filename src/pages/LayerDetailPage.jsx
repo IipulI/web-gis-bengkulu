@@ -51,6 +51,8 @@ const LayerDetailPage = () => {
   const { id } = useParams();
 
   // -- STATES --
+  const [exportButton, setExportButton] = useState(false);
+
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -221,27 +223,40 @@ const LayerDetailPage = () => {
           </p>
         </div>
 
-        <div className="relative group">
-          <button className="inline-flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-green-200 active:scale-95">
+        <div className="relative">
+          <button
+              onClick={() => setExportButton(!exportButton)}
+              className="inline-flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-green-200 active:scale-95"
+          >
             <FileDown className="w-4 h-4" />
             <span>Export Dataset</span>
           </button>
-          <div className="absolute right-0 mt-3 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none group-hover:pointer-events-auto z-50 p-2">
+
+          <div
+              className={`absolute right-0 mt-3 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl transition-all duration-200 z-50 p-2 ${
+                  exportButton
+                      ? "opacity-100 translate-y-0 pointer-events-auto"
+                      : "opacity-0 translate-y-2 pointer-events-none"
+              }`}
+          >
             {[
               { label: "Shapefile (SHP)", format: "shp" },
               { label: "GeoJSON", format: "geojson" },
               { label: "KML / KMZ", format: "kml" },
             ].map((item) => (
-              <button
-                key={item.format}
-                onClick={() => handleExport(item.format)}
-                className="w-full cursor-pointer px-4 py-2.5 text-sm text-gray-600 hover:bg-green-50 hover:text-green-700 rounded-lg text-left transition-colors flex items-center justify-between group/item"
-              >
-                {item.label}
-                <div className="opacity-0 group-hover/item:opacity-100 transition-opacity">
-                  <ChevronRight className="w-3 h-3" />
-                </div>
-              </button>
+                <button
+                    key={item.format}
+                    onClick={() => {
+                      handleExport(item.format);
+                      setExportButton(false);
+                    }}
+                    className="w-full cursor-pointer px-4 py-2.5 text-sm text-gray-600 hover:bg-green-50 hover:text-green-700 rounded-lg text-left transition-colors flex items-center justify-between group/item"
+                >
+                  {item.label}
+                  <div className="opacity-0 group-hover/item:opacity-100 transition-opacity">
+                    <ChevronRight className="w-3 h-3" />
+                  </div>
+                </button>
             ))}
           </div>
         </div>

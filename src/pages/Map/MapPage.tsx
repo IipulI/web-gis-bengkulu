@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { layerService } from "../../services/layerService";
 import environment from "../../config/environment";
 import { useNavigate } from "react-router-dom";
+import { unslugify } from "../../utils/unslugify.ts";
 
 const MapPage = () => {
   const [activeLayers, setActiveLayers] = useState([]);
@@ -380,7 +381,7 @@ const MapPage = () => {
               >
                 <div className="flex items-center gap-3">
                   <span className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
-                  <span className="text-sm tracking-tight">{category}</span>
+                  <span className="text-sm tracking-tight">{ unslugify(category) }</span>
                 </div>
                 <span className="text-slate-500">
                   {openCategory[category] ? "−" : "+"}
