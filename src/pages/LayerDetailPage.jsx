@@ -53,6 +53,8 @@ const LayerDetailPage = () => {
   // -- STATES --
   const [exportButton, setExportButton] = useState(false);
 
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -72,9 +74,27 @@ const LayerDetailPage = () => {
   // -- QUERIES --
 
   // 1. Query Data Dashboard (FIXED: Arguments separated & dependency updated)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      // PENTING: Jika kata kunci pencarian berubah, kembalikan ke halaman 1
+      if (search !== debouncedSearch) {
+        setPage(1);
+      }
+    }, 500); // Waktu tunda 500ms
+
+    return () => clearTimeout(timer);
+  }, [search, debouncedSearch]);
+
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["layer-dashboard", id, page, size],
-    queryFn: () => layerService.getSpecificLayerDashboard(id, { page, size }),
+    // Masukkan debouncedSearch ke queryKey agar otomatis refetch saat berubah
+    queryKey: ["layer-dashboard", id, page, size, debouncedSearch],
+    queryFn: () =>
+        layerService.getSpecificLayerDashboard(id, {
+          page,
+          size,
+          search: debouncedSearch || undefined
+        }),
     enabled: !!id,
   });
 
@@ -174,12 +194,12 @@ const LayerDetailPage = () => {
     }));
   }, [schema]);
 
-  const filteredFeatures = useMemo(() => {
-    if (!search) return features;
-    return features.filter((f) =>
-      JSON.stringify(f.properties).toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [features, search]);
+  // const filteredFeatures = useMemo(() => {
+  //   if (!search) return features;
+  //   return features.filter((f) =>
+  //     JSON.stringify(f.properties).toLowerCase().includes(search.toLowerCase()),
+  //   );
+  // }, [features, search]);
 
   const selectedFeature = useMemo(
     () => features.find((f) => f.id === selectedFeatureId),
@@ -194,15 +214,22 @@ const LayerDetailPage = () => {
   const handleExport = async (format) => {
     try {
       const res = await layerService.exportData(id, format);
-      const blob = new Blob([res.data]);
-      const url = window.URL.createObjectURL(blob);
+      const fileBlob = res instanceof Blob ? res : new Blob([res]);
+
+      const url = window.URL.createObjectURL(fileBlob);
       const a = document.createElement("a");
       a.href = url;
       a.download = getExportFilename(layer?.name, format);
+
+      document.body.appendChild(a);
       a.click();
+
+      a.remove();
       window.URL.revokeObjectURL(url);
+
     } catch (error) {
       console.error("Export failed:", error);
+      toast.error("Gagal mengekspor file.");
     }
   };
 
@@ -308,7 +335,7 @@ const LayerDetailPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {filteredFeatures.map((f) => (
+                {features.map((f) => (
                   <tr
                     key={f.id}
                     className="hover:bg-green-50/30 transition-colors group"

@@ -14,11 +14,12 @@ export const layerService = {
     return response.data;
   },
 
-  async getSpecificLayerDashboard(layerId: string, { page, size }) {
+  async getSpecificLayerDashboard(layerId: string, { page, size, search }) {
     const response = await axiosInstance.get(`/layer/${layerId}`, {
       params: {
         page,
         size,
+        search
       },
     });
 

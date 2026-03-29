@@ -105,15 +105,15 @@ export default function Home() {
                 {heroSlides[currentSlide].desc}
               </p>
 
-              <div className="flex flex-wrap gap-5">
-                <button
-                  onClick={() => navigate("/map")}
-                  className="group bg-blue-600 hover:bg-blue-500 text-white px-10 py-5 rounded-2xl font-black flex items-center gap-3 transition-all shadow-2xl shadow-blue-900/40 active:scale-95"
-                >
-                  Eksplorasi Peta Interaktif
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </button>
-              </div>
+              {/*<div className="flex flex-wrap gap-5">*/}
+              {/*  <button*/}
+              {/*    onClick={() => navigate("/map")}*/}
+              {/*    className="group bg-blue-600 hover:bg-blue-500 text-white px-10 py-5 rounded-2xl font-black flex items-center gap-3 transition-all shadow-2xl shadow-blue-900/40 active:scale-95"*/}
+              {/*  >*/}
+              {/*    Eksplorasi Peta Interaktif*/}
+              {/*    <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />*/}
+              {/*  </button>*/}
+              {/*</div>*/}
             </motion.div>
           </div>
         </div>
@@ -259,14 +259,14 @@ export default function Home() {
                         <h4 className="text-xs font-black text-amber-400 uppercase tracking-[0.3em] mb-2">
                           {stat.category}
                         </h4>
-                        <div className="flex items-baseline gap-2">
-                          <p className="text-6xl font-black text-white">
-                            {mainCount}
-                          </p>
-                          <span className="text-xs font-bold text-blue-300/50 uppercase">
-                            Item
-                          </span>
-                        </div>
+                        {/*<div className="flex items-baseline gap-2">*/}
+                        {/*  <p className="text-6xl font-black text-white">*/}
+                        {/*    {mainCount}*/}
+                        {/*  </p>*/}
+                        {/*  <span className="text-xs font-bold text-blue-300/50 uppercase">*/}
+                        {/*    Item*/}
+                        {/*  </span>*/}
+                        {/*</div>*/}
                       </div>
                       <div className="p-4 rounded-2xl bg-white/5 group-hover:bg-amber-400 transition-colors">
                         <BarChart3 className="w-6 h-6 text-amber-400 group-hover:text-blue-950" />
@@ -297,9 +297,9 @@ export default function Home() {
                               <span className="text-sm font-bold text-blue-100 group-hover/item:text-amber-400 transition-colors">
                                 {sub.name}
                               </span>
-                              <span className="text-[10px] text-blue-400 uppercase font-black">
-                                {sub.total_assets} Records
-                              </span>
+                              {/*<span className="text-[10px] text-blue-400 uppercase font-black">*/}
+                              {/*  {sub.total_assets} Records*/}
+                              {/*</span>*/}
                             </div>
                             <div className="text-right">
                               <span className="text-sm font-black text-white">
