@@ -204,15 +204,14 @@ const Dashboard = () => {
                         <div className="space-y-2 mt-auto pt-4 border-t border-slate-100">
                           {item.sub_categories.slice(0, 3).map((sub, idx) => {
                             // Pengecekan unit untuk desimal
-                            const isLength = ["kilometer", "meter", "km", "m"].includes(
-                                sub.unit?.toLowerCase()
-                            );
-                            const subValue = Number(sub.unit_counts).toLocaleString(
-                                "id-ID",
-                                {
-                                  maximumFractionDigits: isLength ? 2 : 0,
-                                }
-                            );
+                            const allowDecimal = [
+                              "kilometer", "meter", "km", "m",
+                              "m2", "m²", "meter persegi", "hektar", "ha"
+                            ].includes(sub.unit?.toLowerCase());
+
+                            const subValue = Number(sub.unit_counts).toLocaleString("id-ID", {
+                              maximumFractionDigits: allowDecimal ? 2 : 0,
+                            });
                             return (
                                 <div
                                     key={idx}

@@ -275,18 +275,15 @@ export default function Home() {
 
                     <div className="space-y-3 mt-auto">
                       {stat.sub_categories?.slice(0, 3).map((sub, idx) => {
-                        const isLength = [
-                          "kilometer",
-                          "meter",
-                          "km",
-                          "m",
+                        // Pengecekan unit untuk desimal
+                        const allowDecimal = [
+                          "kilometer", "meter", "km", "m",
+                          "m2", "m²", "meter persegi", "hektar", "ha"
                         ].includes(sub.unit?.toLowerCase());
-                        const subValue = Number(sub.unit_counts).toLocaleString(
-                          "id-ID",
-                          {
-                            maximumFractionDigits: isLength ? 2 : 0,
-                          },
-                        );
+
+                        const subValue = Number(sub.unit_counts).toLocaleString("id-ID", {
+                          maximumFractionDigits: allowDecimal ? 2 : 0,
+                        });
 
                         return (
                           <div
