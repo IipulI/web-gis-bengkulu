@@ -23,6 +23,7 @@ import {
   Upload,
   Link,
   UploadCloud,
+  Download,
   Edit3,
   ArrowRight,
   CheckCircle2,
@@ -37,6 +38,20 @@ import { layerService } from "../services/layerService";
 import { toast } from "sonner";
 import z from "zod";
 import { categoryService } from "../services/categoryService";
+
+const getExportFilename = (layerName, format) => {
+  const safeName = layerName?.replace(/\s+/g, "_").toLowerCase() || "layer";
+  switch (format) {
+    case "shp":
+      return `${safeName}.zip`;
+    case "geojson":
+      return `${safeName}.geojson`;
+    case "kml":
+      return `${safeName}.kml`;
+    default:
+      return `${safeName}`;
+  }
+};
 
 interface Layer {
   id: string;
@@ -203,6 +218,28 @@ const MapLayer: React.FC = () => {
       toast.error("Gagal memperbarui layer");
     },
   });
+
+  const handleExportLayer = async (id: string, name: string, format: string) => {
+    try {
+      const res = await layerService.exportData(id, format);
+      const fileBlob = res instanceof Blob ? res : new Blob([res]);
+
+      const url = window.URL.createObjectURL(fileBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = getExportFilename(name, format);
+
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error("Export failed:", error);
+      toast.error("Gagal mengekspor file.");
+    }
+  };
 
   const handleDelete = (id: string) => {
     if (!confirm("Yakin ingin menghapus layer ini?")) return;
@@ -405,6 +442,11 @@ const MapLayer: React.FC = () => {
                         icon={<Edit3 className="w-3.5 h-3.5" />}
                         onClick={() => handleEdit(layer)}
                         label="Edit Metadata"
+                      />
+                      <ActionBtn
+                          icon={<Download className="w-3.5 h-3.5"/>}
+                          onClick={() => handleExportLayer(layer.id, layer.name, 'shp')}
+                          label="Download SHP"
                       />
                       <ActionBtn
                         icon={<UploadCloud className="w-3.5 h-3.5" />}

@@ -172,35 +172,75 @@ const Dashboard = () => {
 
         {/* STATISTICS CARDS */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {statistics?.map((item, i) => (
-            <div
-              key={i}
-              className="group relative bg-white border border-slate-100 rounded-[2rem] p-7 shadow-sm hover:shadow-xl hover:shadow-emerald-900/5 transition-all duration-500 overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mt-16 group-hover:bg-emerald-50 transition-colors duration-500" />
-
-              <div className="relative z-10 flex flex-col gap-6">
+          {statistics?.map((item, i) => {
+            // Format angka total_assets menggunakan standar Indonesia
+            const mainCount = Number(item.total_assets).toLocaleString("id-ID");
+            return (
                 <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500"
-                  style={{ backgroundColor: item.color + "15" }}
+                    key={i}
+                    className="group relative bg-white border border-slate-100 rounded-[2rem] p-7 shadow-sm hover:shadow-xl hover:shadow-emerald-900/5 transition-all duration-500 overflow-hidden flex flex-col h-full"
                 >
-                  <Database className="w-7 h-7" style={{ color: item.color }} />
+
+                  {/* Dekorasi Background */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mt-16 group-hover:bg-emerald-50 transition-colors duration-500" />
+                  <div className="relative z-10 flex flex-col gap-6 flex-grow">
+                    {/* Bagian Atas: Ikon dan Total Utama */}
+                    <div className="flex items-center gap-4 mb-4">
+                      {/* Container Icon */}
+                      <div
+                          className="w-14 h-14 rounded-2xl flex shrink-0 items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500"
+                          style={{ backgroundColor: item.color + "15" }}
+                      >
+                        <Database className="w-7 h-7" style={{ color: item.color }} />
+                      </div>
+
+                      {/* Teks Kategori */}
+                      <span className="text-md font-bold text-slate-400 uppercase tracking-widest group-hover:text-emerald-600 transition-colors">
+                        {item.category}
+                      </span>
+                    </div>
+                    {/* Bagian Bawah: Daftar Sub-kategori */}
+                    {item.sub_categories && item.sub_categories.length > 0 && (
+                        <div className="space-y-2 mt-auto pt-4 border-t border-slate-100">
+                          {item.sub_categories.slice(0, 3).map((sub, idx) => {
+                            // Pengecekan unit untuk desimal
+                            const isLength = ["kilometer", "meter", "km", "m"].includes(
+                                sub.unit?.toLowerCase()
+                            );
+                            const subValue = Number(sub.unit_counts).toLocaleString(
+                                "id-ID",
+                                {
+                                  maximumFractionDigits: isLength ? 2 : 0,
+                                }
+                            );
+                            return (
+                                <div
+                                    key={idx}
+                                    className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100 group-hover:border-emerald-100 hover:!border-emerald-300 hover:bg-emerald-50/50 transition-all group/item"
+                                >
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-slate-600 group-hover/item:text-emerald-700 transition-colors">
+                                      {sub.name}
+                                    </span>
+                                  </div>
+                                  <div className="text-right">
+                                    <span className="text-sm font-black text-slate-800 group-hover/item:text-emerald-900 transition-colors">
+                                      {subValue}
+                                    </span>
+                                    <span className="ml-1 text-[10px] text-slate-400 font-bold uppercase group-hover/item:text-emerald-600 transition-colors">
+                                      {sub.unit}
+                                    </span>
+                                  </div>
+                                </div>
+                            );
+                          })}
+                        </div>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-4xl font-black text-slate-800 tracking-tighter">
-                    {item.total_assets}
-                    <span className="text-sm font-bold text-slate-400 ml-2 uppercase tracking-widest italic">
-                      Unit
-                    </span>
-                  </h3>
-                  <p className="text-sm font-bold text-slate-400 mt-1 uppercase tracking-widest group-hover:text-emerald-600 transition-colors">
-                    {item.category}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </section>
+            );
+          })}
+        </section>;
 
         {/* DATA VISUALIZATION SECTION */}
         <section className="grid lg:grid-cols-4 gap-8">
